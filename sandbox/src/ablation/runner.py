@@ -22,7 +22,7 @@ Runtime estimate: ~2–30 minutes depending on parser and doc count.
 from __future__ import annotations
 
 import json
-import time
+from datetime import datetime
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -79,7 +79,7 @@ class AblationRunner:
         console.print(f"Parsers: {[p.name for p in parsers]}")
         console.print(f"Total runs: {len(docs) * len(parsers)}\n")
 
-        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
         results_file = self.config.results_dir / f"ablation_{timestamp}.jsonl"
         all_results: list[EvaluationResult] = []
 

@@ -66,8 +66,12 @@ if _have_tesseract:
     PARSER_REGISTRY["tesseract_eng+preproc"] = lambda: TesseractParser(lang="eng", apply_preprocessing=True)
 
 if _have_trocr:
-    PARSER_REGISTRY["trocr_large"] = lambda: TrOCRParser(model_name=TrOCRParser.MODEL_LARGE)
-    PARSER_REGISTRY["trocr_base"] = lambda: TrOCRParser(model_name=TrOCRParser.MODEL_SMALL)
+    PARSER_REGISTRY["trocr_large"] = lambda: TrOCRParser(
+        model_name=TrOCRParser.MODEL_LARGE, apply_preprocessing=False
+    )
+    PARSER_REGISTRY["trocr_base"] = lambda: TrOCRParser(
+        model_name=TrOCRParser.MODEL_SMALL, apply_preprocessing=False
+    )
     PARSER_REGISTRY["trocr_large+preproc"] = lambda: TrOCRParser(
         model_name=TrOCRParser.MODEL_LARGE, apply_preprocessing=True
     )

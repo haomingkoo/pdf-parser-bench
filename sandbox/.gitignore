@@ -59,8 +59,12 @@ data/ground_truth/**/*.json
 results/*.jsonl
 results/*.csv
 results/*.json
+results/**/*.jsonl
+results/**/*.csv
+results/**/*.json
 # Exception: keep summary reports if manually curated
 # !results/summary_final.csv
+!results/canonical_summary.json
 
 # --- Jupyter ---
 .ipynb_checkpoints/

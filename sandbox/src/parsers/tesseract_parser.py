@@ -46,8 +46,11 @@ class TesseractParser(BaseParser):
 
     @property
     def name(self) -> str:
+        base = f"tesseract_{self.lang}"
+        if self.psm != 6:
+            base += f"_psm{self.psm}"
         suffix = "+preproc" if self.apply_preprocessing else ""
-        return f"tesseract_{self.lang}_psm{self.psm}{suffix}"
+        return f"{base}{suffix}"
 
     @property
     def version(self) -> str:

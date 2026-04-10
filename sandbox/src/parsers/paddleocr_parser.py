@@ -83,7 +83,8 @@ class PaddleOCRParser(BaseParser):
 
     @property
     def name(self) -> str:
-        return f"paddleocr_{self.lang}"
+        suffix = "+preproc" if self.apply_preprocessing else ""
+        return f"paddleocr_{self.lang}{suffix}"
 
     @property
     def version(self) -> str:

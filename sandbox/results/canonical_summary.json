@@ -1,0 +1,88 @@
+{
+  "digital_acroform": {
+    "pdfplumber": {
+      "n": 20,
+      "cer": 0.49,
+      "wer": 0.5239,
+      "fer": 0.0,
+      "f1": 0.0,
+      "speed": 151.2
+    },
+    "pymupdf": {
+      "n": 20,
+      "cer": 0.4704,
+      "wer": 0.4374,
+      "fer": 1.0,
+      "f1": 1.0,
+      "speed": 32.1
+    },
+    "pypdf": {
+      "n": 20,
+      "cer": 0.49,
+      "wer": 0.5239,
+      "fer": 1.0,
+      "f1": 1.0,
+      "speed": 414.6
+    },
+    "tesseract_eng": {
+      "n": 20,
+      "cer": 0.5343,
+      "wer": 0.6113,
+      "fer": 0.0,
+      "f1": 0.0,
+      "speed": 0.7
+    }
+  },
+  "scanned_clean_300dpi": {
+    "pdfplumber": {
+      "n": 10,
+      "cer": 1.0,
+      "wer": 1.0,
+      "fer": 0.0,
+      "f1": 0.0,
+      "speed": 1116.9
+    },
+    "pymupdf": {
+      "n": 10,
+      "cer": 1.0,
+      "wer": 1.0,
+      "fer": 0.0,
+      "f1": 0.0,
+      "speed": 937.8
+    },
+    "pypdf": {
+      "n": 10,
+      "cer": 1.0,
+      "wer": 1.0,
+      "fer": 0.0,
+      "f1": 0.0,
+      "speed": 1165.3
+    },
+    "tesseract_eng": {
+      "n": 10,
+      "cer": 0.4843,
+      "wer": 0.7493,
+      "fer": 0.0,
+      "f1": 0.0,
+      "speed": 1.1
+    }
+  },
+  "preproc_comparison": {
+    "tesseract_eng": {
+      "n": 10,
+      "cer": 0.4843,
+      "wer": 0.7493,
+      "fer": 0.0,
+      "f1": 0.0,
+      "speed": 1.1
+    },
+    "tesseract_eng+preproc": {
+      "n": 10,
+      "cer": 0.5605,
+      "wer": 0.8659,
+      "fer": 0.0,
+      "f1": 0.0,
+      "speed": 0.2
+    }
+  }
+}

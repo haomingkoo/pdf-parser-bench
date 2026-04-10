@@ -329,6 +329,457 @@
     .pipe-node sub { display: block; font-size: 0.68rem; font-weight: 400; color: var(--muted); margin-top: 2px; }
     .pipe-arrow { color: var(--muted); font-size: 1.2rem; flex-shrink: 0; padding: 0 4px; }
 
+    /* ── Animated explainers ─────────────────────────────────────── */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.84rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      color: var(--text);
+    }
+    .explain-demo {
+      margin: 22px 0 26px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at top right, rgba(59,130,246,0.08), transparent 34%),
+        linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0));
+      padding: 20px;
+    }
+    .explain-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .explain-kicker {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .explain-caption {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      max-width: 620px;
+      min-height: 3.2em;
+    }
+    .explain-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .explain-step {
+      background: var(--surface);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1.35;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+    .explain-step:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+    }
+    .explain-step.is-active {
+      border-color: rgba(59,130,246,0.5);
+      background: rgba(59,130,246,0.12);
+      color: var(--text);
+      box-shadow: 0 0 0 1px rgba(59,130,246,0.12) inset;
+    }
+    .explain-screen {
+      position: relative;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+      padding: 18px;
+      overflow: hidden;
+      min-height: 248px;
+    }
+    .explain-panel { display: none; }
+    .explain-panel.is-active {
+      display: block;
+      animation: explainFade 0.45s ease;
+    }
+    @keyframes explainFade {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .explain-grid-2 {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .demo-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    .demo-stack {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .demo-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 72px;
+    }
+    .demo-card strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.94rem;
+      color: var(--text);
+    }
+    .demo-card span {
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+    }
+    .demo-note {
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .demo-code-lines {
+      display: grid;
+      gap: 8px;
+    }
+    .demo-line {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.84rem;
+    }
+    .demo-line.highlight {
+      border-color: rgba(59,130,246,0.45);
+      background: rgba(59,130,246,0.08);
+    }
+    .demo-token {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      background: rgba(255,255,255,0.03);
+      white-space: nowrap;
+    }
+    .demo-token.operator {
+      color: var(--accent);
+      border-color: rgba(59,130,246,0.38);
+      background: rgba(59,130,246,0.10);
+    }
+    .demo-token.amber {
+      color: var(--amber);
+      border-color: rgba(245,158,11,0.32);
+      background: rgba(245,158,11,0.10);
+    }
+    .demo-token.green {
+      color: var(--green);
+      border-color: rgba(34,197,94,0.32);
+      background: rgba(34,197,94,0.10);
+    }
+    .demo-output {
+      display: grid;
+      gap: 10px;
+    }
+    .demo-output-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      font-size: 0.88rem;
+    }
+    .demo-output-line strong { color: var(--text); }
+    .glyph-grid {
+      display: grid;
+      gap: 12px;
+    }
+    .glyph-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .glyph-pill {
+      min-width: 62px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+    .glyph-pill.good {
+      color: var(--green);
+      border-color: rgba(34,197,94,0.28);
+      background: rgba(34,197,94,0.08);
+      font-weight: 700;
+    }
+    .glyph-pill.accent {
+      color: var(--accent);
+      border-color: rgba(59,130,246,0.35);
+      background: rgba(59,130,246,0.08);
+      font-weight: 700;
+    }
+    .glyph-arrow {
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .scan-preview {
+      position: relative;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 22%),
+        radial-gradient(circle at 70% 60%, rgba(255,255,255,0.05), transparent 18%),
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      min-height: 138px;
+      padding: 20px 16px;
+    }
+    .scan-preview.clean {
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    }
+    .scan-line {
+      height: 18px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      margin-bottom: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .scan-line::before {
+      content: '';
+      position: absolute;
+      inset: 2px 24px 2px 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+    }
+    .scan-line.dark::before {
+      background: linear-gradient(90deg, rgba(17,17,24,0.92), rgba(17,17,24,0.55));
+    }
+    .scan-line.short::before { inset-inline-end: 90px; }
+    .scan-noise {
+      position: absolute;
+      inset: 0;
+      opacity: 0.18;
+      background-image:
+        radial-gradient(circle at 15% 30%, rgba(255,255,255,0.85) 0 1px, transparent 2px),
+        radial-gradient(circle at 70% 20%, rgba(255,255,255,0.65) 0 1px, transparent 2px),
+        radial-gradient(circle at 50% 70%, rgba(255,255,255,0.75) 0 1px, transparent 2px);
+      pointer-events: none;
+    }
+    .ocr-box-row,
+    .ocr-char-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .ocr-box {
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px dashed rgba(59,130,246,0.5);
+      background: rgba(59,130,246,0.10);
+      color: var(--text);
+      font-weight: 700;
+      min-width: 122px;
+      text-align: center;
+    }
+    .ocr-char {
+      width: 42px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      font-weight: 800;
+      font-size: 1rem;
+    }
+    .ocr-char.good {
+      color: var(--green);
+      border-color: rgba(34,197,94,0.35);
+      background: rgba(34,197,94,0.10);
+    }
+    .ocr-char.fix {
+      color: var(--amber);
+      border-color: rgba(245,158,11,0.35);
+      background: rgba(245,158,11,0.10);
+    }
+    .ocr-result {
+      display: grid;
+      gap: 10px;
+    }
+    .ocr-result-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      font-size: 0.88rem;
+    }
+    .ocr-result-line strong { color: var(--text); }
+    .ocr-correction {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .handwrite-preview {
+      position: relative;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(59,130,246,0.10), transparent 26%),
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      min-height: 152px;
+      padding: 18px 16px;
+      overflow: hidden;
+    }
+    .handwrite-preview::before,
+    .handwrite-preview::after {
+      content: '';
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      border-top: 1px dashed rgba(148,163,184,0.18);
+    }
+    .handwrite-preview::before { top: 54px; }
+    .handwrite-preview::after { top: 102px; }
+    .handwrite-word {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 42px;
+      position: relative;
+      z-index: 1;
+    }
+    .ink-char {
+      width: 46px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      font-size: 1.08rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .ink-char.sky {
+      color: #60a5fa;
+      border-color: rgba(96,165,250,0.35);
+      background: rgba(96,165,250,0.10);
+    }
+    .ink-char.amber {
+      color: #f59e0b;
+      border-color: rgba(245,158,11,0.35);
+      background: rgba(245,158,11,0.10);
+    }
+    .ink-char.green {
+      color: #22c55e;
+      border-color: rgba(34,197,94,0.35);
+      background: rgba(34,197,94,0.10);
+    }
+    .ink-char.red {
+      color: #ef4444;
+      border-color: rgba(239,68,68,0.35);
+      background: rgba(239,68,68,0.10);
+    }
+    .patch-grid-demo {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .patch-cell {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+    .patch-cell.hot {
+      border-color: rgba(59,130,246,0.45);
+      background: rgba(59,130,246,0.12);
+    }
+    .patch-cell.ink {
+      border-color: rgba(34,197,94,0.45);
+      background: rgba(34,197,94,0.10);
+    }
+    .seq-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .seq-token {
+      padding: 9px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      font-weight: 800;
+      font-size: 0.92rem;
+    }
+    .seq-token.sky {
+      color: #60a5fa;
+      border-color: rgba(96,165,250,0.35);
+      background: rgba(96,165,250,0.10);
+    }
+    .seq-token.amber {
+      color: #f59e0b;
+      border-color: rgba(245,158,11,0.35);
+      background: rgba(245,158,11,0.10);
+    }
+    .seq-token.green {
+      color: #22c55e;
+      border-color: rgba(34,197,94,0.35);
+      background: rgba(34,197,94,0.10);
+    }
+    .seq-token.red {
+      color: #ef4444;
+      border-color: rgba(239,68,68,0.35);
+      background: rgba(239,68,68,0.10);
+    }
+
     /* ── Score ring ─────────────────────────────────────────────── */
     .score-ring-row { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin: 28px 0; }
     .score-ring {
@@ -435,6 +886,27 @@
       .chart-bars { height: 120px; }
       .pipeline { flex-direction: column; }
       .pipe-arrow { transform: rotate(90deg); }
+      .explain-grid-2 { grid-template-columns: 1fr; }
+      .explain-screen { min-height: 300px; }
+      .explain-demo { padding: 16px; }
+      .demo-stack { grid-template-columns: 1fr; }
+      .demo-output-line, .ocr-result-line { flex-direction: column; align-items: flex-start; }
+      .patch-grid-demo { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .hero-badge::before,
+      .scroll-hint { animation: none; }
+      .reveal,
+      .reveal.visible,
+      .bar-fill,
+      .h-acc-fill,
+      .explain-step,
+      .explain-panel.is-active {
+        transition: none !important;
+        animation: none !important;
+      }
     }
   </style>
 </head>
@@ -533,7 +1005,7 @@
   <div class="container">
     <div class="section-num">Tool Overview</div>
     <h2 class="section-title">8 parsers, 6 categories</h2>
-    <p class="section-intro">All tools below are free and run on-prem. The Claude API entry is included for research comparison only — it is not on-prem.</p>
+    <p class="section-intro">The local tools below are free and can run on-prem. The Claude API row is included only as a cloud comparison baseline, not as an on-prem option.</p>
 
     <div class="table-wrap reveal">
       <table>
@@ -544,7 +1016,7 @@
         </thead>
         <tbody>
           <tr>
-            <td><strong>Docling</strong> <span class="tag blue" style="margin-left:4px;font-size:0.65rem">★ Top Pick</span></td>
+            <td><strong>Docling</strong> <span class="tag blue" style="margin-left:4px;font-size:0.65rem">★ Strong local option</span></td>
             <td class="cell-good">MIT</td>
             <td class="cell-good">✓</td>
             <td class="cell-good">97.9%*</td>
@@ -625,7 +1097,7 @@
       <div class="tool-card highlight">
         <div class="tool-name">Docling<span class="cite"><a href="#ref-4">[4]</a></span></div>
         <div class="tool-license"><span class="tag blue">MIT</span> &nbsp; IBM Research · 37k ★</div>
-        <div class="tool-desc">Best open-source ML layout parser. TableFormer model achieves near-commercial table accuracy. Fully local, air-gap compatible. Native PII integration via GLiNER.</div>
+        <div class="tool-desc">Strong open-source ML layout parser for mixed document layouts. Fully local, air-gap compatible, and a practical first choice when tables and scanned pages matter.</div>
         <div class="tool-caps">
           <span class="tag blue">Scanned</span>
           <span class="tag blue">Tables</span>
@@ -636,7 +1108,7 @@
       <div class="tool-card">
         <div class="tool-name">PyMuPDF</div>
         <div class="tool-license"><span class="tag amber">AGPL-3.0</span> &nbsp; Artifex · 8.7k ★</div>
-        <div class="tool-desc">Fastest text extraction benchmark winner. 10–50× faster than pdfminer-based tools. Best for digital text-layer PDFs and AcroForm fields. Not useful for scanned inputs without Tesseract.</div>
+        <div class="tool-desc">Very fast text-layer PDF extractor. Best for digital text PDFs and simple AcroForm workflows. Not useful for scanned inputs without an OCR stage.</div>
         <div class="tool-caps">
           <span class="tag amber">Digital PDF</span>
           <span class="tag amber">AcroForm</span>
@@ -669,6 +1141,127 @@
     <div class="viz reveal">
       <div class="viz-title">Category 1 — Text extraction (pypdf · PyMuPDF · pdfplumber)</div>
       <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">No image processing. No machine learning. Pure parsing of PDF's internal byte structure.</p>
+
+      <div class="explain-demo js-stepper" data-interval="2800">
+        <div class="explain-head">
+          <div>
+            <div class="explain-kicker">Animated walkthrough</div>
+            <p class="explain-caption" aria-live="polite">Step 1. Open the page objects and find the font plus the text instructions.</p>
+          </div>
+          <span class="tag blue">Tap a step or let it play</span>
+        </div>
+        <div class="explain-steps">
+          <button class="explain-step is-active" type="button" data-caption="Step 1. Open the page objects and find the font plus the text instructions.">1. Find objects</button>
+          <button class="explain-step" type="button" data-caption="Step 2. Read the content stream operators. Tf sets the font. Td moves the cursor. Tj draws visible text.">2. Read operators</button>
+          <button class="explain-step" type="button" data-caption="Step 3. Map glyph codes through the ToUnicode table so raw font symbols become real characters.">3. Map glyphs</button>
+          <button class="explain-step" type="button" data-caption="Step 4. Sort the recovered characters into reading order and stitch the final text together.">4. Build text</button>
+        </div>
+        <div class="explain-screen">
+          <div class="explain-panel is-active">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Objects the parser follows</div>
+                <div class="demo-stack">
+                  <div class="demo-card">
+                    <strong>xref table</strong>
+                    <span>Object 12 points to Page 1.</span>
+                  </div>
+                  <div class="demo-card">
+                    <strong>Page object</strong>
+                    <span>Contains links to fonts and contents.</span>
+                  </div>
+                  <div class="demo-card">
+                    <strong>Font dictionary</strong>
+                    <span>Defines glyph IDs and optional Unicode map.</span>
+                  </div>
+                  <div class="demo-card">
+                    <strong>Contents stream</strong>
+                    <span>Stores the drawing commands for visible text.</span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">Plain-English result</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Question</span><strong>Where is the text?</strong></div>
+                  <div class="demo-output-line"><span>Answer</span><strong>Inside objects, not pixels.</strong></div>
+                </div>
+                <div class="demo-note">If the PDF is only an image scan, this path has almost nothing to read.</div>
+              </div>
+            </div>
+          </div>
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Content stream</div>
+                <div class="demo-code-lines">
+                  <div class="demo-line"><span class="demo-token operator">BT</span><span>Begin a text block.</span></div>
+                  <div class="demo-line highlight"><span class="demo-token operator">Tf</span><span>Select <strong>/Helvetica 12</strong>.</span></div>
+                  <div class="demo-line highlight"><span class="demo-token amber">Td</span><span>Move to <strong>(72, 680)</strong>.</span></div>
+                  <div class="demo-line highlight"><span class="demo-token green">Tj</span><span>Draw <strong>Complaint Date:</strong></span></div>
+                  <div class="demo-line"><span class="demo-token amber">Td</span><span>Move right for the value.</span></div>
+                  <div class="demo-line"><span class="demo-token green">Tj</span><span>Draw <strong>01/15/2024</strong>.</span></div>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">What the parser learns</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Font</span><strong>Helvetica 12</strong></div>
+                  <div class="demo-output-line"><span>Position</span><strong>(72, 680) then +180</strong></div>
+                  <div class="demo-output-line"><span>Visible strings</span><strong>Label then value</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Glyph code → character</div>
+                <div class="glyph-grid">
+                  <div class="glyph-row">
+                    <div class="glyph-pill">&lt;0043&gt;</div><div class="glyph-arrow">→</div><div class="glyph-pill good">C</div>
+                    <div class="glyph-pill">&lt;006F&gt;</div><div class="glyph-arrow">→</div><div class="glyph-pill good">o</div>
+                    <div class="glyph-pill">&lt;006D&gt;</div><div class="glyph-arrow">→</div><div class="glyph-pill good">m</div>
+                  </div>
+                  <div class="glyph-row">
+                    <div class="glyph-pill accent">&lt;F001&gt;</div><div class="glyph-arrow">→</div><div class="glyph-pill accent">#</div>
+                    <div class="glyph-pill">&lt;0031&gt;</div><div class="glyph-arrow">→</div><div class="glyph-pill good">1</div>
+                    <div class="glyph-pill">&lt;0035&gt;</div><div class="glyph-arrow">→</div><div class="glyph-pill good">5</div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">Why this step matters</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>With ToUnicode</span><strong>Clean text comes out.</strong></div>
+                  <div class="demo-output-line"><span>Without it</span><strong>You get mojibake or blanks.</strong></div>
+                </div>
+                <div class="demo-note">This is why some form-flattened PDFs look readable on screen but extract badly.</div>
+              </div>
+            </div>
+          </div>
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Final extracted text</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Line 1</span><strong>Complaint Date:</strong></div>
+                  <div class="demo-output-line"><span>Line 2</span><strong>01/15/2024</strong></div>
+                  <div class="demo-output-line"><span>AcroForm note</span><strong><code>/V</code> values may need a second path.</strong></div>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">Short summary</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Digital PDF</span><strong>Fast and accurate.</strong></div>
+                  <div class="demo-output-line"><span>Scanned PDF</span><strong>No text layer to follow.</strong></div>
+                </div>
+                <div class="demo-note">Text extractors win when the page already contains text objects.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="viz-row cols-2" style="gap:32px;align-items:start">
         <div>
@@ -716,6 +1309,139 @@ endbfchar</div>
     <div class="viz reveal">
       <div class="viz-title">Category 2 — Traditional OCR (Tesseract · PaddleOCR PP-OCRv4<span class="cite"><a href="#ref-6">[6]</a></span>)</div>
       <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">Converts a raster image into text through a multi-stage vision pipeline. Each stage is a prerequisite for the next.</p>
+
+      <div class="explain-demo js-stepper" data-interval="2600">
+        <div class="explain-head">
+          <div>
+            <div class="explain-kicker">Animated walkthrough</div>
+            <p class="explain-caption" aria-live="polite">Step 1. Start with pixels from a scan. The page looks readable to us, but it is only an image.</p>
+          </div>
+          <span class="tag amber">Simple OCR flow</span>
+        </div>
+        <div class="explain-steps">
+          <button class="explain-step is-active" type="button" data-caption="Step 1. Start with pixels from a scan. The page looks readable to us, but it is only an image.">1. Pixels in</button>
+          <button class="explain-step" type="button" data-caption="Step 2. Clean the image so text stands out from the background. This is where binarization and deskew help.">2. Clean page</button>
+          <button class="explain-step" type="button" data-caption="Step 3. Find lines and word boxes. Tesseract uses heuristics. PaddleOCR learns the boxes directly.">3. Find words</button>
+          <button class="explain-step" type="button" data-caption="Step 4. Read each crop into characters or tokens. This is the actual recognition stage.">4. Read letters</button>
+          <button class="explain-step" type="button" data-caption="Step 5. Rescore the output and emit final text. A language model can fix low-confidence mistakes.">5. Final text</button>
+        </div>
+        <div class="explain-screen">
+          <div class="explain-panel is-active">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Scanned page strip</div>
+                <div class="scan-preview">
+                  <div class="scan-noise"></div>
+                  <div class="scan-line"></div>
+                  <div class="scan-line short"></div>
+                  <div class="scan-line"></div>
+                  <div class="demo-note">At this stage the parser only sees grey pixels, not text objects.</div>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">Short summary</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Input</span><strong>Raster image</strong></div>
+                  <div class="demo-output-line"><span>Problem</span><strong>No direct characters yet</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">After cleaning</div>
+                <div class="scan-preview clean">
+                  <div class="scan-line dark"></div>
+                  <div class="scan-line dark short"></div>
+                  <div class="scan-line dark"></div>
+                  <div class="demo-note">Background noise drops. Letters become darker and easier to separate.</div>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">What changed</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Binarization</span><strong>Push text away from background.</strong></div>
+                  <div class="demo-output-line"><span>Deskew</span><strong>Rotate the lines back into place.</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Detected word boxes</div>
+                <div class="scan-preview clean">
+                  <div class="ocr-box-row" style="margin-top:12px">
+                    <div class="ocr-box">Complaint</div>
+                    <div class="ocr-box">Date</div>
+                    <div class="ocr-box">01/15/2024</div>
+                  </div>
+                  <div class="demo-note">Now the engine knows where each word probably lives on the page.</div>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">Tesseract vs PaddleOCR</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Tesseract</span><strong>Uses projection-profile heuristics.</strong></div>
+                  <div class="demo-output-line"><span>PaddleOCR</span><strong>Uses a learned detection model.</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Character reading</div>
+                <div class="ocr-char-row">
+                  <div class="ocr-char good">C</div>
+                  <div class="ocr-char good">o</div>
+                  <div class="ocr-char good">m</div>
+                  <div class="ocr-char good">p</div>
+                  <div class="ocr-char good">l</div>
+                  <div class="ocr-char good">a</div>
+                  <div class="ocr-char good">i</div>
+                  <div class="ocr-char good">n</div>
+                  <div class="ocr-char good">t</div>
+                </div>
+                <div class="demo-note">The recognizer converts each cropped word image into tokens.</div>
+              </div>
+              <div>
+                <div class="demo-label">Model output</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Raw decode</span><strong>Comprlaint</strong></div>
+                  <div class="demo-output-line"><span>Low-confidence area</span><strong><code>rn</code> vs <code>m</code></strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Rescored output</div>
+                <div class="ocr-result">
+                  <div class="ocr-result-line">
+                    <span>Correction</span>
+                    <span class="ocr-correction">
+                      <span class="demo-token amber">cornplaint</span>
+                      <span class="glyph-arrow">→</span>
+                      <span class="demo-token green">complaint</span>
+                    </span>
+                  </div>
+                  <div class="ocr-result-line"><span>Final text</span><strong>Complaint Date 01/15/2024</strong></div>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">Short summary</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Strength</span><strong>Works on scans and photos.</strong></div>
+                  <div class="demo-output-line"><span>Weakness</span><strong>Quality falls when pixels are poor.</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="pipeline">
         <div class="pipe-node warn">Raster image<sub>from PDF or scan</sub></div>
@@ -800,6 +1526,110 @@ endbfchar</div>
       <div class="viz-title">Category 4 — Handwriting recognition (TrOCR<span class="cite"><a href="#ref-5">[5]</a></span>)</div>
       <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">Microsoft TrOCR is a Vision-Encoder–Language-Decoder transformer trained entirely on handwritten text images. It never uses sliding windows or character classifiers.</p>
 
+      <div class="explain-demo js-stepper" data-interval="2800">
+        <div class="explain-head">
+          <div>
+            <div class="explain-kicker">Animated walkthrough</div>
+            <p class="explain-caption" aria-live="polite">Step 1. Crop the handwritten field tightly. TrOCR works best on a single field, not a full busy page.</p>
+          </div>
+          <span class="tag purple">Field-level TrOCR flow</span>
+        </div>
+        <div class="explain-steps">
+          <button class="explain-step is-active" type="button" data-caption="Step 1. Crop the handwritten field tightly. TrOCR works best on a single field, not a full busy page.">1. Crop field</button>
+          <button class="explain-step" type="button" data-caption="Step 2. Split the image into patches. The encoder turns each patch into a visual token.">2. Encode patches</button>
+          <button class="explain-step" type="button" data-caption="Step 3. Decode one token at a time. The decoder keeps looking back at the relevant ink patches.">3. Read letters</button>
+          <button class="explain-step" type="button" data-caption="Step 4. Emit the final text string for that field. Confidence still matters on messy real forms.">4. Emit text</button>
+        </div>
+        <div class="explain-screen">
+          <div class="explain-panel is-active">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Handwritten field crop</div>
+                <div class="handwrite-preview">
+                  <div class="handwrite-word">
+                    <div class="ink-char sky">J</div>
+                    <div class="ink-char amber">o</div>
+                    <div class="ink-char green">n</div>
+                    <div class="ink-char red">e</div>
+                    <div class="ink-char sky">s</div>
+                  </div>
+                  <div class="demo-note">Keep the crop small so background boxes, tables, and nearby labels do not distract the model.</div>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">Short summary</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Input</span><strong>One field image</strong></div>
+                  <div class="demo-output-line"><span>Best use</span><strong>Name, date, note, signature line</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Patch tokens from the crop</div>
+                <div class="patch-grid-demo">
+                  <div class="patch-cell"></div><div class="patch-cell"></div><div class="patch-cell hot"></div><div class="patch-cell hot"></div><div class="patch-cell"></div><div class="patch-cell"></div>
+                  <div class="patch-cell"></div><div class="patch-cell ink"></div><div class="patch-cell hot"></div><div class="patch-cell hot"></div><div class="patch-cell ink"></div><div class="patch-cell"></div>
+                  <div class="patch-cell ink"></div><div class="patch-cell ink"></div><div class="patch-cell hot"></div><div class="patch-cell hot"></div><div class="patch-cell ink"></div><div class="patch-cell"></div>
+                  <div class="patch-cell"></div><div class="patch-cell ink"></div><div class="patch-cell hot"></div><div class="patch-cell hot"></div><div class="patch-cell"></div><div class="patch-cell"></div>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">What the encoder does</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Unit</span><strong>16×16 pixel patches</strong></div>
+                  <div class="demo-output-line"><span>Output</span><strong>A sequence of visual tokens</strong></div>
+                </div>
+                <div class="demo-note">Dark patches carry the pen strokes. Blank patches mostly provide spacing context.</div>
+              </div>
+            </div>
+          </div>
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Decoder reading sequence</div>
+                <div class="seq-row">
+                  <div class="seq-token sky">J</div>
+                  <div class="seq-token amber">o</div>
+                  <div class="seq-token green">n</div>
+                  <div class="seq-token red">e</div>
+                  <div class="seq-token sky">s</div>
+                </div>
+                <div class="demo-note">Each colored token is predicted one step at a time while cross-attention keeps pointing back to the ink patches that matter.</div>
+              </div>
+              <div>
+                <div class="demo-label">Why this helps</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Connected strokes</span><strong>Handled as one word image</strong></div>
+                  <div class="demo-output-line"><span>Not used</span><strong>No handcrafted character boxes</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Field-level output</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Model text</span><strong>Jones</strong></div>
+                  <div class="demo-output-line"><span>Use this on</span><strong>Short handwritten fields</strong></div>
+                  <div class="demo-output-line"><span>Avoid</span><strong>Full-page mixed layouts</strong></div>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">Practical takeaway</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Strength</span><strong>Cleaner cursive transcription</strong></div>
+                  <div class="demo-output-line"><span>Risk</span><strong>Messy real forms still need review</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="pipeline">
         <div class="pipe-node warn">Handwritten field crop<sub>from form region</sub></div>
         <div class="pipe-arrow">→</div>
@@ -835,8 +1665,8 @@ endbfchar</div>
     <h2 class="section-title">Performance across document types</h2>
     <p class="section-intro">Real measured results on this benchmark's test corpus, plus published benchmark references for parsers not yet run. ✓ = measured on this machine. * = from published research.</p>
 
-    <div class="insight success">
-      <strong>Measured results below are real — run on this machine, 2026-04-10.</strong> Corpus: 20 synthetic AcroForms + 50 FUNSD scanned business forms. Speed measured on Apple Silicon (CPU only, no GPU). Parsers with * are from published benchmarks — not yet run locally. Run <code>evaluate.py --all</code> to reproduce or extend with your own corpus.
+      <div class="insight success">
+      <strong>The measured tables below come from local reruns on this machine.</strong> Corpus: 20 synthetic AcroForms plus a 10-document FUNSD slice from the available scanned set. Speed is CPU-only on Apple Silicon. Rows marked * still come from published benchmarks, not this machine.
     </div>
 
     <!-- Real measured results table -->
@@ -849,10 +1679,10 @@ endbfchar</div>
             <th>Parser</th><th>CER ↓</th><th>WER ↓</th><th>FER ↑</th><th>Field F1 ↑</th><th>Speed (p/s) ↑</th><th>AcroForm fields</th>
           </tr></thead>
           <tbody>
-            <tr><td><strong>pypdf</strong></td><td class="cell-good">0.490</td><td class="cell-ok">0.524</td><td class="cell-good">1.000</td><td class="cell-good">1.000</td><td class="cell-good">566</td><td class="cell-good">✓</td></tr>
-            <tr><td><strong>pymupdf</strong></td><td class="cell-good">0.470</td><td class="cell-good">0.437</td><td class="cell-good">1.000</td><td class="cell-good">1.000</td><td class="cell-ok">64</td><td class="cell-good">✓</td></tr>
-            <tr><td><strong>pdfplumber</strong></td><td class="cell-good">0.490</td><td class="cell-ok">0.524</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-ok">219</td><td class="cell-bad">✗</td></tr>
-            <tr><td><strong>tesseract</strong></td><td class="cell-bad">0.534</td><td class="cell-bad">0.611</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-bad">1.0</td><td class="cell-bad">✗</td></tr>
+            <tr><td><strong>pypdf</strong></td><td class="cell-good">0.490</td><td class="cell-ok">0.524</td><td class="cell-good">1.000</td><td class="cell-good">1.000</td><td class="cell-good">415</td><td class="cell-good">✓</td></tr>
+            <tr><td><strong>pymupdf</strong></td><td class="cell-good">0.470</td><td class="cell-good">0.437</td><td class="cell-good">1.000</td><td class="cell-good">1.000</td><td class="cell-ok">32</td><td class="cell-good">✓</td></tr>
+            <tr><td><strong>pdfplumber</strong></td><td class="cell-good">0.490</td><td class="cell-ok">0.524</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-ok">151</td><td class="cell-bad">✗</td></tr>
+            <tr><td><strong>tesseract</strong></td><td class="cell-bad">0.534</td><td class="cell-bad">0.611</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-bad">0.68</td><td class="cell-bad">✗</td></tr>
           </tbody>
         </table>
       </div>
@@ -868,15 +1698,15 @@ endbfchar</div>
             <th>Parser</th><th>CER ↓</th><th>WER ↓</th><th>FER ↑</th><th>Field F1 ↑</th><th>Speed (p/s) ↑</th><th>Reads scanned</th>
           </tr></thead>
           <tbody>
-            <tr><td><strong>tesseract (raw)</strong></td><td class="cell-ok">0.484</td><td class="cell-bad">0.749</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-bad">1.75</td><td class="cell-good">✓</td></tr>
-            <tr><td><strong>tesseract +preproc</strong></td><td class="cell-bad">0.560</td><td class="cell-bad">0.866</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-bad">0.38</td><td class="cell-good">✓</td></tr>
-            <tr><td><strong>pypdf</strong></td><td class="cell-bad">1.000</td><td class="cell-bad">1.000</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-good">4341</td><td class="cell-bad">✗</td></tr>
-            <tr><td><strong>pymupdf</strong></td><td class="cell-bad">1.000</td><td class="cell-bad">1.000</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-good">1842</td><td class="cell-bad">✗</td></tr>
-            <tr><td><strong>pdfplumber</strong></td><td class="cell-bad">1.000</td><td class="cell-bad">1.000</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-good">1938</td><td class="cell-bad">✗</td></tr>
+            <tr><td><strong>tesseract (raw)</strong></td><td class="cell-ok">0.484</td><td class="cell-bad">0.749</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-bad">1.05</td><td class="cell-good">✓</td></tr>
+            <tr><td><strong>tesseract +preproc</strong></td><td class="cell-bad">0.560</td><td class="cell-bad">0.866</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-bad">0.25</td><td class="cell-good">✓</td></tr>
+            <tr><td><strong>pypdf</strong></td><td class="cell-bad">1.000</td><td class="cell-bad">1.000</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-good">1165</td><td class="cell-bad">✗</td></tr>
+            <tr><td><strong>pymupdf</strong></td><td class="cell-bad">1.000</td><td class="cell-bad">1.000</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-good">938</td><td class="cell-bad">✗</td></tr>
+            <tr><td><strong>pdfplumber</strong></td><td class="cell-bad">1.000</td><td class="cell-bad">1.000</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-good">1117</td><td class="cell-bad">✗</td></tr>
           </tbody>
         </table>
       </div>
-      <p style="font-size:0.75rem;color:var(--muted);margin-top:8px">Tesseract CER=0.484 on noisy FUNSD scanned forms is plausible — these are degraded real-world documents, not clean print. Text parsers "speed" is misleadingly high because they immediately return empty string (no text layer to process). Docling, PaddleOCR, and TrOCR results pending — require larger model downloads.</p>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:8px">Tesseract CER=0.484 on this noisy 10-document FUNSD slice is plausible — these are degraded real-world business forms, not clean print. Text parsers "speed" is misleadingly high because they immediately return empty string (no text layer to process). Docling, PaddleOCR, and TrOCR results are still pending local reruns because they require larger model downloads.</p>
     </div>
 
     <div class="insight warn">
@@ -896,6 +1726,7 @@ endbfchar</div>
           <div class="chart-bars" id="speedChart"></div>
         </div>
       </div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:10px">Speed rows marked ✓ come from the latest local reruns, but they are best-fit task measurements rather than one universal race: pypdf / PyMuPDF / pdfplumber are from digital AcroForms, while Tesseract is from scanned forms.</p>
     </div>
 
     <!-- Chart: Handwriting accuracy -->
@@ -926,7 +1757,7 @@ endbfchar</div>
     <div class="insight warn reveal">
       <strong>Measured finding (2026-04-10): Preprocessing hurts already-good scans.</strong><br>
       Running the full pipeline (deskew → denoise → CLAHE → Sauvola binarization) on FUNSD 300 DPI scans
-      <em>increased</em> CER from <strong>0.484 → 0.560 (+7.6%)</strong>. Sauvola binarization
+      <em>increased</em> CER from <strong>0.484 → 0.560 (+0.076 absolute, +15.7% relative)</strong>. Sauvola binarization
       (window=25) over-thresholds fine strokes on adequate-quality 300 DPI images, destroying
       information that Tesseract could read from the raw scan.<br><br>
       <strong>Rule of thumb:</strong> Gate preprocessing on measured document quality — not a global
@@ -947,22 +1778,22 @@ endbfchar</div>
               <td><strong>tesseract (raw)</strong></td>
               <td class="cell-ok">0.484</td>
               <td class="cell-bad">0.749</td>
-              <td>1.75</td>
+              <td>1.05</td>
               <td class="cell-good">Use this</td>
             </tr>
             <tr>
               <td><strong>tesseract +preproc</strong></td>
               <td class="cell-bad">0.560</td>
               <td class="cell-bad">0.866</td>
-              <td class="cell-bad">0.38</td>
-              <td class="cell-bad">Worse (+7.6% CER, 4.6× slower)</td>
+              <td class="cell-bad">0.25</td>
+              <td class="cell-bad">Worse (+0.076 CER, 4.3× slower)</td>
             </tr>
           </tbody>
         </table>
       </div>
       <p style="font-size:0.75rem;color:var(--muted);margin-top:8px">
         Measured on this machine (Apple Silicon, CPU). Preprocessing pipeline: deskew (Hough) →
-        denoise (bilateral filter) → CLAHE → Sauvola binarization. For degraded/fax inputs the
+        denoise (fast non-local means) → CLAHE → Sauvola binarization. For degraded/fax inputs the
         pipeline is beneficial — this finding is specific to already-adequate 300 DPI business form scans.
       </p>
     </div>
@@ -1069,14 +1900,14 @@ flowchart TD
     B -->|NO| D
     C --> D{📄 Does the PDF have a text layer?}
     D -->|YES — Digital PDF| E{Is it an AcroForm\nwith fillable fields?}
-    E -->|YES| F["✅ pypdf.get_fields\nFastest · 100% accurate\non digital forms"]
+    E -->|YES| F["✅ pypdf.get_fields\nBest current measured fit\non synthetic AcroForms"]
     E -->|NO| G{Complex tables\nor multi-column layout?}
-    G -->|YES| H["✅ Docling\n97.9% table accuracy"]
+    G -->|YES| H["✅ Docling\nStrong layout + table handling"]
     G -->|NO| I["✅ PyMuPDF\nFastest plain text"]
     D -->|NO — Scanned PDF| J{🔍 Scan quality?}
     J -->|Less than 200 DPI| K["❌ Reject\nor request rescan"]
-    J -->|200 – 300 DPI| L["Apply FULL preprocessing\ndeskew → denoise → CLAHE → Sauvola"]
-    J -->|300 DPI or better| M["Standard preprocessing\ndeskew only"]
+    J -->|Low DPI or visibly degraded| L["If you preprocess:\ndeskew → denoise → CLAHE → Sauvola"]
+    J -->|Already readable 300 DPI| M["Usually skip heavy binarization\nor keep cleanup light"]
     L --> N{✍️ Handwritten fields present?}
     M --> N
     N -->|YES| O{Volume over\n500K pages/month?}
@@ -1178,7 +2009,7 @@ flowchart TD
     </div>
 
     <div class="insight success">
-      <strong>Top recommendation for most teams:</strong> Start with <strong>Docling</strong> locally (zero API cost, MIT license, best compliance posture). Add <strong>TrOCR fine-tuned</strong> on 50 of your actual handwritten complaint forms to close the handwriting gap. Route ≥300 DPI digital forms through <strong>PyMuPDF AcroForm extraction</strong> for speed. HITL at confidence &lt;0.70. The full pipeline costs ~$200–800/month in compute vs $3,000–$30,000/month for equivalent cloud structured extraction volume.
+      <strong>Practical starting point for most teams:</strong> Start with <strong>Docling</strong> locally if you need one general parser for scanned and layout-heavy documents. Add <strong>TrOCR fine-tuned</strong> on real handwritten complaint fields if handwriting matters. For digital AcroForms specifically, the current local measurements favor <strong>pypdf.get_fields()</strong> for field extraction speed and accuracy on the synthetic corpus used here. Keep HITL for low-confidence cases rather than assuming one parser will cover every subtype.
     </div>
 
     <div class="insight warn">
@@ -1331,7 +2162,7 @@ flowchart TD
   <div class="container">
     <div class="footer-inner">
       <span>Haoming Koo · 2026 · <a href="https://kooexperience.com">kooexperience.com</a></span>
-      <span style="color:var(--muted)">All accuracy numbers from published research. Measure on your own corpus before tool selection.</span>
+      <span style="color:var(--muted)">This page mixes local measurements with cited external benchmarks. Measure on your own corpus before tool selection.</span>
       <a href="/blog">← Back to Blog</a>
     </div>
   </div>
@@ -1364,10 +2195,10 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 const FIELD_ACC_DATA = [
   { label: 'Printed text', acc: 99, color: '#22c55e' },
   { label: 'Checkboxes', acc: 93, color: '#22c55e' },
-  { label: 'Numeric (printed)', acc: 85, color: '#f59e0b' },
   { label: 'Dates (printed)', acc: 90, color: '#f59e0b' },
-  { label: 'HW free text', acc: 79, color: '#ef4444' },
+  { label: 'Numeric (printed)', acc: 85, color: '#f59e0b' },
   { label: 'Dates (HW)', acc: 80, color: '#ef4444' },
+  { label: 'HW free text', acc: 79, color: '#ef4444' },
 ];
 
 const TABLE_ACC_DATA = [
@@ -1381,10 +2212,10 @@ const TABLE_ACC_DATA = [
 // Speed: pypdf/pymupdf/pdfplumber/tesseract are MEASURED (this benchmark, digital_acroform N=20
 // + scanned_clean_300dpi N=10). Docling/PaddleOCR/TrOCR are from published benchmarks.
 const SPEED_DATA = [
-  { name: 'pypdf ✓', val: 566, cls: 'docling' },
-  { name: 'pdfplumber ✓', val: 219, cls: 'pymupdf' },
-  { name: 'PyMuPDF ✓', val: 64, cls: 'paddleocr' },
-  { name: 'Tesseract ✓', val: 1.75, cls: 'tesseract' },
+  { name: 'pypdf ✓', val: 414.6, cls: 'docling' },
+  { name: 'pdfplumber ✓', val: 151.2, cls: 'pymupdf' },
+  { name: 'PyMuPDF ✓', val: 32.1, cls: 'paddleocr' },
+  { name: 'Tesseract ✓', val: 1.05, cls: 'tesseract' },
   { name: 'Docling *', val: 1.3, cls: 'trocr' },
   { name: 'TrOCR *', val: 0.8, cls: 'claude' },
 ];
@@ -1598,6 +2429,70 @@ function renderRubricRings() {
   </div>`;
 }
 
+function initExplainers() {
+  const demos = Array.from(document.querySelectorAll('.js-stepper'));
+  if (!demos.length) return;
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const activateStep = (demo, index) => {
+    const steps = Array.from(demo.querySelectorAll('.explain-step'));
+    const panels = Array.from(demo.querySelectorAll('.explain-panel'));
+    const caption = demo.querySelector('.explain-caption');
+    const safeIndex = ((index % steps.length) + steps.length) % steps.length;
+
+    steps.forEach((step, i) => {
+      const active = i === safeIndex;
+      step.classList.toggle('is-active', active);
+      step.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+    panels.forEach((panel, i) => panel.classList.toggle('is-active', i === safeIndex));
+    if (caption) caption.textContent = steps[safeIndex]?.dataset.caption || '';
+    demo.dataset.activeStep = String(safeIndex);
+  };
+
+  const stopDemo = (demo) => {
+    if (demo._stepTimer) {
+      clearInterval(demo._stepTimer);
+      demo._stepTimer = null;
+    }
+  };
+
+  const startDemo = (demo) => {
+    if (reducedMotion || demo._stepTimer || demo.dataset.inview !== '1') return;
+    const steps = demo.querySelectorAll('.explain-step');
+    if (steps.length <= 1) return;
+    const intervalMs = Number(demo.dataset.interval || 2600);
+    demo._stepTimer = setInterval(() => {
+      const current = Number(demo.dataset.activeStep || 0);
+      activateStep(demo, (current + 1) % steps.length);
+    }, intervalMs);
+  };
+
+  demos.forEach((demo) => {
+    const steps = Array.from(demo.querySelectorAll('.explain-step'));
+    activateStep(demo, 0);
+    steps.forEach((step, index) => {
+      step.addEventListener('click', () => {
+        activateStep(demo, index);
+        stopDemo(demo);
+        startDemo(demo);
+      });
+    });
+  });
+
+  if (!reducedMotion && typeof IntersectionObserver !== 'undefined') {
+    const stepperObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        entry.target.dataset.inview = entry.isIntersecting ? '1' : '0';
+        if (entry.isIntersecting) startDemo(entry.target);
+        else stopDemo(entry.target);
+      });
+    }, { threshold: 0.45 });
+    demos.forEach((demo) => stepperObserver.observe(demo));
+  }
+}
+
 // Initialise Mermaid (decision framework diagram)
 if (typeof mermaid !== 'undefined') {
   mermaid.initialize({
@@ -1622,6 +2517,7 @@ if (typeof mermaid !== 'undefined') {
 
 // Initialise all charts on page load
 window.addEventListener('load', () => {
+  initExplainers();
   renderFieldAccChart();
   renderBarChart('tableAccChart', TABLE_ACC_DATA, 100, '%');
   renderBarChart('speedChart', SPEED_DATA, null, ' p/s');

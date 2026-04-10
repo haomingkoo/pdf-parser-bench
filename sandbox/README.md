@@ -153,11 +153,10 @@ Each test PDF in `data/raw/` has a corresponding `data/ground_truth/<name>.json`
 
 | Parser | CER ↓ | WER ↓ | Field F1 ↑ | Speed (p/s) ↑ | AcroForm fields |
 |---|---|---|---|---|---|
-| pypdf | 0.490† | 0.524† | **1.000** | **566** | ✓ |
-| pymupdf | 0.470† | 0.437† | **1.000** | 59‡ | ✓ |
-| pdfplumber | 0.490† | 0.524† | 0.000 | 235 | ✗ |
-| Tesseract | 0.534 | 0.611 | 0.000 | 1.0 | ✗ |
-| **Claude API** | **0.000** | **0.000** | **1.000** | ~0.8 | ✓ (not on-prem) |
+| pypdf | 0.490† | 0.524† | **1.000** | **415** | ✓ |
+| pymupdf | 0.470† | 0.437† | **1.000** | 32‡ | ✓ |
+| pdfplumber | 0.490† | 0.524† | 0.000 | 151 | ✗ |
+| Tesseract | 0.534 | 0.611 | 0.000 | 0.68 | ✗ |
 
 † CER/WER artifact: AcroForm GT interleaves label+value; parsers read them in separate passes. Field F1 is the correct metric for AcroForms.  
 ‡ pymupdf slower because it also runs `find_tables()` + `page.widgets()` per page.
@@ -166,11 +165,11 @@ Each test PDF in `data/raw/` has a corresponding `data/ground_truth/<name>.json`
 
 | Parser | CER ↓ | WER ↓ | Speed (p/s) ↑ | Reads scanned? |
 |---|---|---|---|---|
-| **Tesseract (raw)** | **0.484** | **0.749** | 1.8 | ✓ |
-| Tesseract +preproc | 0.560 | 0.866 | 0.4 | ✓ |
+| **Tesseract (raw)** | **0.484** | **0.749** | 1.05 | ✓ |
+| Tesseract +preproc | 0.560 | 0.866 | 0.25 | ✓ |
 | pypdf / pymupdf / pdfplumber | 1.000 | 1.000 | instant | ✗ (no text layer) |
 
-> **Key finding:** Preprocessing (deskew + denoise + CLAHE + Sauvola) **hurts** already-adequate 300 DPI scans by +7.6% CER. It only helps genuinely degraded inputs (fax, heavily skewed, low-contrast). Gate preprocessing on `check_dpi()` and measured skew, not a global flag.
+> **Key finding:** Preprocessing (deskew + denoise + CLAHE + Sauvola) **hurts** already-adequate 300 DPI scans in this slice: CER rose from 0.484 to 0.560 (+0.076 absolute, +15.7% relative). It only helps genuinely degraded inputs (fax, heavily skewed, low-contrast). Gate preprocessing on `check_dpi()` and measured skew, not a global flag.
 
 Tesseract CER=0.484 is consistent with published benchmarks (0.40–0.55 range on noisy scanned business forms). Docling and PaddleOCR results pending model download.
 

@@ -227,6 +227,7 @@ class MetricsComputer:
 
         Normalization (lowercase, whitespace collapse) is applied here before
         passing to jiwer so the result is purely about word-level accuracy.
+        For jiwer 4.0 compatibility, the empty/empty case is treated as 0.0.
         """
         import unicodedata, re
         from jiwer import wer as _jiwer_wer
@@ -238,7 +239,7 @@ class MetricsComputer:
         ref_n = _norm(reference)
         hyp_n = _norm(hypothesis)
         if not ref_n:
-            return 1.0
+            return 0.0 if not hyp_n else 1.0
         try:
             score = _jiwer_wer(ref_n, hyp_n)
             return min(float(score), 1.0)

@@ -60,7 +60,8 @@ class TrOCRParser(BaseParser):
     @property
     def name(self) -> str:
         size = "large" if "large" in self.model_name else "base"
-        return f"trocr_{size}"
+        suffix = "+preproc" if self.apply_preprocessing else ""
+        return f"trocr_{size}{suffix}"
 
     @property
     def version(self) -> str:
