@@ -840,6 +840,117 @@
       color: var(--text-secondary);
       line-height: 1.6;
     }
+    .vit-teach-flow {
+      display: grid;
+      gap: 12px;
+    }
+    .vit-stage-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.02);
+      padding: 14px;
+    }
+    .vit-stage-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .vit-stage-text {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+    .vit-stage-note {
+      font-size: 0.7rem;
+      color: var(--muted);
+      line-height: 1.55;
+      margin-top: 8px;
+    }
+    .vit-arrow {
+      text-align: center;
+      color: var(--muted);
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+    .vit-token-seq {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .vit-token-chip {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+    }
+    .vit-token-chip.accent {
+      border-color: rgba(59,130,246,0.4);
+      background: rgba(59,130,246,0.10);
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .vit-board {
+      position: relative;
+      width: min(100%, 230px);
+      aspect-ratio: 1;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)),
+        repeating-linear-gradient(
+          to right,
+          transparent 0,
+          transparent calc(4.166% - 1px),
+          rgba(255,255,255,0.07) calc(4.166% - 1px),
+          rgba(255,255,255,0.07) 4.166%
+        ),
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0,
+          transparent calc(4.166% - 1px),
+          rgba(255,255,255,0.07) calc(4.166% - 1px),
+          rgba(255,255,255,0.07) 4.166%
+        );
+      overflow: hidden;
+    }
+    .vit-board::before,
+    .vit-board::after {
+      content: '';
+      position: absolute;
+      border-radius: 8px;
+      border: 1px solid rgba(59,130,246,0.35);
+      background: rgba(59,130,246,0.10);
+    }
+    .vit-board::before {
+      left: 20.8%;
+      top: 33.2%;
+      width: 12.5%;
+      height: 12.5%;
+    }
+    .vit-board::after {
+      left: 58.2%;
+      top: 54%;
+      width: 12.5%;
+      height: 12.5%;
+    }
+    .vit-board-label {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(17,24,39,0.75);
+      border: 1px solid var(--border);
+      font-size: 0.68rem;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+    }
     .seq-row {
       display: flex;
       flex-wrap: wrap;
@@ -2218,89 +2329,66 @@ damaged on 15 January...
           <div class="explain-panel">
             <div class="explain-grid-2">
               <div>
-                <div class="demo-label">One handwritten field image</div>
-                <p class="patch-stage-note">This stage is still vision only. The model has <strong>not</strong> read any letters yet. It only receives one cropped image and cuts it into small squares.</p>
+                <div class="demo-label">How this is usually taught</div>
+                <p class="patch-stage-note">The common ViT mental model is: <strong>one image</strong> -> <strong>fixed-size patches</strong> -> <strong>a token sequence</strong>. The decoder only turns those image tokens into text in the next step.</p>
 
-                <!-- One cropped image with the patch grid drawn on top -->
-                <svg viewBox="0 0 250 72" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:10px;display:block;margin-bottom:6px">
-                  <rect width="250" height="72" rx="8" fill="#13131a"/>
-                  <rect x="0"   y="0" width="50" height="72" fill="rgba(56,189,248,0.07)"/>
-                  <rect x="50"  y="0" width="50" height="72" fill="rgba(245,158,11,0.07)"/>
-                  <rect x="100" y="0" width="50" height="72" fill="rgba(34,197,94,0.07)"/>
-                  <rect x="150" y="0" width="50" height="72" fill="rgba(239,68,68,0.07)"/>
-                  <rect x="200" y="0" width="50" height="72" fill="rgba(56,189,248,0.07)"/>
-                  <text x="20"  y="56" font-family="Georgia,serif" font-size="46" font-weight="700" fill="rgba(56,189,248,0.9)">J</text>
-                  <text x="68"  y="56" font-family="Georgia,serif" font-size="46" font-weight="700" fill="rgba(245,158,11,0.9)">o</text>
-                  <text x="115" y="56" font-family="Georgia,serif" font-size="46" font-weight="700" fill="rgba(34,197,94,0.9)">n</text>
-                  <text x="160" y="56" font-family="Georgia,serif" font-size="46" font-weight="700" fill="rgba(239,68,68,0.9)">e</text>
-                  <text x="206" y="56" font-family="Georgia,serif" font-size="46" font-weight="700" fill="rgba(56,189,248,0.9)">s</text>
-                  <line x1="50"  y1="0" x2="50"  y2="72" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
-                  <line x1="100" y1="0" x2="100" y2="72" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
-                  <line x1="150" y1="0" x2="150" y2="72" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
-                  <line x1="200" y1="0" x2="200" y2="72" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
-                  <line x1="0" y1="18" x2="250" y2="18" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
-                  <line x1="0" y1="36" x2="250" y2="36" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
-                  <line x1="0" y1="54" x2="250" y2="54" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
-                  <rect width="250" height="72" rx="8" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-                </svg>
-                <p class="patch-source-caption"><strong style="color:var(--text)">Top:</strong> one cropped image of the word. The dashed grid shows the 20 patches the encoder creates from that single image.</p>
-
-                <div class="demo-label">Those 20 patches become 20 visual tokens</div>
-                <div class="patch-grid-outer">
-                  <div class="patch-col-label">left</div>
-                  <div class="patch-col-label focus">focus near “o”</div>
-                  <div class="patch-col-label">mid</div>
-                  <div class="patch-col-label">right-mid</div>
-                  <div class="patch-col-label">right</div>
-                </div>
-                <div class="patch-grid-with-rows">
-                  <div class="patch-row-labels">
-                    <div class="patch-row-label">top band</div>
-                    <div class="patch-row-label">upper</div>
-                    <div class="patch-row-label">lower</div>
-                    <div class="patch-row-label">bottom</div>
+                <div class="vit-teach-flow">
+                  <div class="vit-stage-card">
+                    <div class="vit-stage-title">1. Start with one cropped field image</div>
+                    <svg viewBox="0 0 250 72" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:10px;display:block">
+                      <rect width="250" height="72" rx="8" fill="#13131a"/>
+                      <rect x="0"   y="0" width="50" height="72" fill="rgba(56,189,248,0.07)"/>
+                      <rect x="50"  y="0" width="50" height="72" fill="rgba(245,158,11,0.07)"/>
+                      <rect x="100" y="0" width="50" height="72" fill="rgba(34,197,94,0.07)"/>
+                      <rect x="150" y="0" width="50" height="72" fill="rgba(239,68,68,0.07)"/>
+                      <rect x="200" y="0" width="50" height="72" fill="rgba(56,189,248,0.07)"/>
+                      <text x="20"  y="56" font-family="Georgia,serif" font-size="46" font-weight="700" fill="rgba(56,189,248,0.9)">J</text>
+                      <text x="68"  y="56" font-family="Georgia,serif" font-size="46" font-weight="700" fill="rgba(245,158,11,0.9)">o</text>
+                      <text x="115" y="56" font-family="Georgia,serif" font-size="46" font-weight="700" fill="rgba(34,197,94,0.9)">n</text>
+                      <text x="160" y="56" font-family="Georgia,serif" font-size="46" font-weight="700" fill="rgba(239,68,68,0.9)">e</text>
+                      <text x="206" y="56" font-family="Georgia,serif" font-size="46" font-weight="700" fill="rgba(56,189,248,0.9)">s</text>
+                      <rect width="250" height="72" rx="8" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                    </svg>
+                    <p class="vit-stage-text">TrOCR is meant for a tight word or line crop, not a full complaint-form page.</p>
                   </div>
-                  <div class="patch-grid-demo">
-                    <div class="patch-cell"></div>
-                    <div class="patch-cell hot"></div>
-                    <div class="patch-cell ink"></div>
-                    <div class="patch-cell ink"></div>
-                    <div class="patch-cell"></div>
 
-                    <div class="patch-cell ink"></div>
-                    <div class="patch-cell hot"></div>
-                    <div class="patch-cell ink"></div>
-                    <div class="patch-cell ink"></div>
-                    <div class="patch-cell ink"></div>
+                  <div class="vit-arrow">↓</div>
 
-                    <div class="patch-cell ink"></div>
-                    <div class="patch-cell hot"></div>
-                    <div class="patch-cell ink"></div>
-                    <div class="patch-cell"></div>
-                    <div class="patch-cell ink"></div>
+                  <div class="vit-stage-card">
+                    <div class="vit-stage-title">2. Resize, then split into equal 16×16 patches</div>
+                    <div class="vit-board">
+                      <div class="vit-board-label">24 × 24 patches</div>
+                    </div>
+                    <p class="vit-stage-text">In the standard TrOCR config, the processor resizes the crop to <strong>384×384</strong>. With <strong>16×16</strong> patches, that becomes a <strong>24×24 grid = 576 patches</strong>.</p>
+                    <p class="vit-stage-note">The board above is a simplified schematic. It represents the real 24×24 patch grid without drawing all 576 cells individually.</p>
+                  </div>
 
-                    <div class="patch-cell ink"></div>
-                    <div class="patch-cell hot"></div>
-                    <div class="patch-cell"></div>
-                    <div class="patch-cell"></div>
-                    <div class="patch-cell ink"></div>
+                  <div class="vit-arrow">↓</div>
+
+                  <div class="vit-stage-card">
+                    <div class="vit-stage-title">3. Turn those patches into a token sequence</div>
+                    <div class="vit-token-seq">
+                      <span class="vit-token-chip accent">patch 1</span>
+                      <span class="vit-token-chip">patch 2</span>
+                      <span class="vit-token-chip">patch 3</span>
+                      <span class="vit-token-chip">patch 4</span>
+                      <span class="vit-token-chip">…</span>
+                      <span class="vit-token-chip">patch 576</span>
+                    </div>
+                    <p class="vit-stage-text">This is still vision data, not text. The next step is where the decoder reads those image tokens and starts generating letters.</p>
                   </div>
                 </div>
-                <div class="patch-legend">
-                  <span class="patch-legend-item"><span class="patch-legend-dot hot"></span>patches the decoder is focusing on right now</span>
-                  <span class="patch-legend-item"><span class="patch-legend-dot ink"></span>patches with heavier pen strokes</span>
-                  <span class="patch-legend-item"><span class="patch-legend-dot"></span>mostly background or spacing</span>
-                </div>
-                <p class="patch-callout">Nothing here is a repeated copy of the word. The bottom grid is just the <strong>same single image</strong>, sliced into 20 little squares so the encoder can turn pixels into tokens.</p>
               </div>
               <div>
                 <div class="demo-label">What the encoder does</div>
                 <div class="demo-output">
                   <div class="demo-output-line"><span>Unit</span><strong>16×16 pixel patches</strong></div>
+                  <div class="demo-output-line"><span>Default resize</span><strong>384×384 crop</strong></div>
+                  <div class="demo-output-line"><span>Patch count</span><strong>24×24 = 576 patches</strong></div>
                   <div class="demo-output-line"><span>Output</span><strong>A sequence of visual tokens</strong></div>
                   <div class="demo-output-line"><span>Still missing</span><strong>No final text yet</strong></div>
                 </div>
-                <div class="demo-note">The encoder turns image pieces into vectors. The next step is where the decoder converts those vectors into letters.</div>
+                <div class="demo-note">This follows the standard Vision Transformer teaching pattern: image -> patches -> embeddings -> token sequence. TrOCR then adds the text decoder on top.</div>
               </div>
             </div>
           </div>
