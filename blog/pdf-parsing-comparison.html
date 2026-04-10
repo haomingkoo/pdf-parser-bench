@@ -374,8 +374,8 @@
     }
     .explain-steps {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 8px;
       margin-bottom: 16px;
     }
     .explain-step {
@@ -383,12 +383,12 @@
       color: var(--text-secondary);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 10px 12px;
+      padding: 8px 10px;
       font: inherit;
-      font-size: 0.82rem;
+      font-size: 0.76rem;
       font-weight: 700;
       line-height: 1.35;
-      text-align: left;
+      text-align: center;
       cursor: pointer;
       transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease, color 0.2s ease;
     }
@@ -471,14 +471,18 @@
       align-items: center;
       padding: 10px 12px;
       border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.02);
+      border: 1px solid transparent;
+      background: transparent;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.84rem;
+      opacity: 0.4;
+      transition: opacity 0.2s, border-color 0.2s, background 0.2s;
     }
     .demo-line.highlight {
-      border-color: rgba(59,130,246,0.45);
-      background: rgba(59,130,246,0.08);
+      border-color: rgba(59,130,246,0.55);
+      border-left: 3px solid var(--accent);
+      background: rgba(59,130,246,0.1);
+      opacity: 1;
     }
     .demo-token {
       display: inline-flex;
@@ -727,22 +731,114 @@
     }
     .patch-grid-demo {
       display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 8px;
+    }
+    .patch-grid-outer {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 6px;
     }
     .patch-cell {
       aspect-ratio: 1;
       border-radius: 10px;
       border: 1px solid var(--border);
       background: rgba(255,255,255,0.02);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .patch-cell.hot {
-      border-color: rgba(59,130,246,0.45);
-      background: rgba(59,130,246,0.12);
+      border-color: rgba(59,130,246,0.55);
+      background: rgba(59,130,246,0.15);
     }
     .patch-cell.ink {
-      border-color: rgba(34,197,94,0.45);
-      background: rgba(34,197,94,0.10);
+      border-color: rgba(34,197,94,0.55);
+      background: rgba(34,197,94,0.12);
+    }
+    .patch-col-label {
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--muted);
+      padding-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .patch-col-label.focus {
+      color: var(--accent);
+    }
+    .patch-stage-note {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 12px;
+    }
+    .patch-source-caption {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.55;
+      margin: 0 0 12px;
+    }
+    .patch-grid-with-rows {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0 10px;
+      align-items: start;
+    }
+    .patch-row-labels {
+      display: grid;
+      grid-template-rows: repeat(4, 1fr);
+      gap: 8px;
+      align-self: stretch;
+      padding-top: 28px;
+    }
+    .patch-row-label {
+      display: flex;
+      align-items: center;
+      font-size: 0.62rem;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+      height: 100%;
+    }
+    .patch-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 10px;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+    .patch-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .patch-legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      flex-shrink: 0;
+    }
+    .patch-legend-dot.hot {
+      border-color: rgba(59,130,246,0.55);
+      background: rgba(59,130,246,0.15);
+    }
+    .patch-legend-dot.ink {
+      border-color: rgba(34,197,94,0.55);
+      background: rgba(34,197,94,0.12);
+    }
+    .patch-callout {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
     }
     .seq-row {
       display: flex;
@@ -824,8 +920,8 @@
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 10px; padding: 10px 14px; font-size: 0.82rem;
       font-weight: 600; text-align: center;
-      flex: 1 1 80px; min-width: 0;
-      overflow-wrap: break-word; word-break: break-word; hyphens: auto;
+      flex: 1 1 90px; min-width: 0;
+      overflow-wrap: break-word;
     }
     .pipeline { overflow-x: auto; }
 
@@ -850,6 +946,177 @@
     .rubric-legend-label { flex: 1; color: var(--text-secondary); }
     .rubric-legend-pct { font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--text); min-width: 32px; text-align: right; }
 
+    /* ── Professor / Student / Expert dialog threads ──────────── */
+    .dialog-thread {
+      margin: 22px 0;
+      padding: 18px 20px;
+      background: rgba(255,255,255,0.015);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+    .dialog-thread-title {
+      font-size: 0.67rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .dialog-turn {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .dialog-turn:last-child { margin-bottom: 0; }
+    .dialog-avatar {
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 1rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .dialog-avatar.prof  { border-color: rgba(59,130,246,0.45);  background: rgba(59,130,246,0.1); }
+    .dialog-avatar.stu   { border-color: rgba(245,158,11,0.45);  background: rgba(245,158,11,0.1); }
+    .dialog-avatar.exp   { border-color: rgba(168,85,247,0.45);  background: rgba(168,85,247,0.1); }
+    .dialog-body { flex: 1; min-width: 0; }
+    .dialog-name {
+      font-size: 0.64rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+    .dialog-name.prof { color: var(--accent); }
+    .dialog-name.stu  { color: var(--amber); }
+    .dialog-name.exp  { color: var(--purple); }
+    .dialog-bubble {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px 14px 14px 14px;
+      padding: 11px 14px;
+      font-size: 0.875rem;
+      line-height: 1.65;
+      color: var(--text-secondary);
+    }
+    .dialog-turn.is-stu .dialog-bubble { border-radius: 14px 4px 14px 14px; }
+    .dialog-bubble strong { color: var(--text); }
+    .dialog-bubble code {
+      font-size: 0.82em;
+      background: var(--code-bg);
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    /* ── Attention map grid (for Docling section) ──────────────── */
+    .attn-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 4px;
+    }
+    .attn-cell {
+      aspect-ratio: 1;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+    }
+    .attn-cell.hot-1  { background: rgba(59,130,246,0.70); border-color: rgba(59,130,246,0.55); }
+    .attn-cell.hot-2  { background: rgba(59,130,246,0.40); border-color: rgba(59,130,246,0.30); }
+    .attn-cell.hot-3  { background: rgba(59,130,246,0.16); border-color: rgba(59,130,246,0.20); }
+    .attn-cell.c-text    { background: rgba(34,197,94,0.12);  border-color: rgba(34,197,94,0.25); }
+    .attn-cell.c-table   { background: rgba(245,158,11,0.14); border-color: rgba(245,158,11,0.30); }
+    .attn-cell.c-heading { background: rgba(168,85,247,0.14); border-color: rgba(168,85,247,0.28); }
+
+    /* ── Region labelled boxes ──────────────────────────────────── */
+    .region-demo {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .region-box {
+      border: 2px solid;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+    .region-box:last-child { margin-bottom: 0; }
+    .region-box.type-heading { border-color: var(--purple); color: var(--purple); background: rgba(168,85,247,0.08); }
+    .region-box.type-text    { border-color: var(--green);  color: var(--green);  background: rgba(34,197,94,0.08); }
+    .region-box.type-table   { border-color: var(--amber);  color: var(--amber);  background: rgba(245,158,11,0.08); }
+    .region-label {
+      flex-shrink: 0;
+      font-size: 0.62rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid currentColor;
+      opacity: 0.75;
+      white-space: nowrap;
+    }
+
+    /* ── Token stream for TableFormer ──────────────────────────── */
+    .token-stream { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+    .tok {
+      padding: 4px 8px;
+      border-radius: 7px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      color: var(--text-secondary);
+    }
+    .tok.struct  { color: var(--accent); border-color: rgba(59,130,246,0.30); background: rgba(59,130,246,0.08); }
+    .tok.content { color: var(--green);  border-color: rgba(34,197,94,0.30);  background: rgba(34,197,94,0.08); }
+    .tok.end     { color: var(--muted); }
+
+    /* ── Stepper Prev / Next navigation ────────────────────────── */
+    .stepper-nav {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; margin: 10px 0;
+    }
+    .stepper-btn {
+      background: var(--surface); color: var(--text-secondary);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 7px 16px; font: inherit; font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+    .stepper-btn:hover { border-color: rgba(59,130,246,0.5); color: var(--text); transform: translateY(-1px); }
+    .stepper-btn:disabled { opacity: 0.3; cursor: default; transform: none; }
+    .stepper-counter {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+      color: var(--muted); min-width: 48px; text-align: center;
+    }
+    .stepper-play-pause {
+      background: var(--surface); color: var(--accent);
+      border: 1px solid rgba(59,130,246,0.35); border-radius: 10px;
+      padding: 7px 14px; font: inherit; font-size: 0.84rem; font-weight: 700;
+      cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      letter-spacing: 0.02em;
+    }
+    .stepper-play-pause:hover { border-color: rgba(59,130,246,0.7); background: rgba(59,130,246,0.08); transform: translateY(-1px); }
+    .stepper-play-pause.is-paused { color: var(--muted); border-color: var(--border); }
+    /* ── Operator colour legend ─────────────────────────────────── */
+    .op-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .op-legend-item {
+      display: flex; align-items: center; gap: 5px;
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 3px 8px; font-size: 0.7rem; color: var(--text-secondary);
+    }
+    .op-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     /* ── Mermaid decision tree ───────────────────────────────────── */
     .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; overflow-x: auto; }
     .mermaid svg { max-width: 100%; height: auto !important; }
@@ -891,7 +1158,7 @@
       .explain-demo { padding: 16px; }
       .demo-stack { grid-template-columns: 1fr; }
       .demo-output-line, .ocr-result-line { flex-direction: column; align-items: flex-start; }
-      .patch-grid-demo { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .patch-grid-demo, .patch-grid-outer { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -953,15 +1220,15 @@
       <div class="pipeline">
         <div class="pipe-node warn">Content Mix<sub>Print + Handwriting</sub></div>
         <div class="pipe-arrow">→</div>
-        <div class="pipe-node warn">Layout Diversity<sub>KVP · Tables · Checkboxes</sub></div>
+        <div class="pipe-node warn">Layout Variety<sub>KVP · Tables · Fields</sub></div>
         <div class="pipe-arrow">→</div>
-        <div class="pipe-node warn">Scan Quality<sub>Fax 200 DPI · Skew · Coffee stains</sub></div>
+        <div class="pipe-node warn">Scan Quality<sub>Fax · Skew · Noise</sub></div>
         <div class="pipe-arrow">→</div>
-        <div class="pipe-node warn">Document Heterogeneity<sub>Form + Attachments in one PDF</sub></div>
+        <div class="pipe-node warn">Mixed Docs<sub>Form + Attachments in one PDF</sub></div>
         <div class="pipe-arrow">→</div>
         <div class="pipe-node warn">Field Semantics<sub>Cross-field validation</sub></div>
         <div class="pipe-arrow">→</div>
-        <div class="pipe-node warn" style="border-color:var(--red);background:rgba(239,68,68,0.08);color:var(--red)">Compliance<sub>CFPB · GDPR · PII</sub></div>
+        <div class="pipe-node warn" style="border-color:var(--red);background:rgba(239,68,68,0.08);color:var(--red)">Comply<sub>CFPB · GDPR · PII</sub></div>
       </div>
     </div>
 
@@ -1142,81 +1409,158 @@
       <div class="viz-title">Category 1 — Text extraction (pypdf · PyMuPDF · pdfplumber)</div>
       <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">No image processing. No machine learning. Pure parsing of PDF's internal byte structure.</p>
 
-      <div class="explain-demo js-stepper" data-interval="2800">
+      <div class="explain-demo js-stepper" data-interval="6000">
         <div class="explain-head">
           <div>
-            <div class="explain-kicker">Animated walkthrough</div>
-            <p class="explain-caption" aria-live="polite">Step 1. Open the page objects and find the font plus the text instructions.</p>
+            <div class="explain-kicker">Step-by-step walkthrough — one PDF operator at a time</div>
+            <p class="explain-caption" aria-live="polite">Step 1 of 7. Open the PDF binary. Everything is stored as numbered objects — like rows in a database. Object 12 is the Page. Object 14 is the Font. Object 15 is the Contents stream.</p>
           </div>
-          <span class="tag blue">Tap a step or let it play</span>
+          <span class="tag blue">Use Prev / Next or click any step</span>
+        </div>
+        <div class="op-legend">
+          <div class="op-legend-item"><div class="op-dot" style="background:rgba(59,130,246,0.7)"></div>Blue highlight = the operator currently executing</div>
+          <div class="op-legend-item"><div class="op-dot" style="background:rgba(59,130,246,0.3)"></div>Operator token</div>
+          <div class="op-legend-item"><div class="op-dot" style="background:rgba(245,158,11,0.5)"></div>Position operator</div>
+          <div class="op-legend-item"><div class="op-dot" style="background:rgba(34,197,94,0.5)"></div>Text draw operator</div>
         </div>
         <div class="explain-steps">
-          <button class="explain-step is-active" type="button" data-caption="Step 1. Open the page objects and find the font plus the text instructions.">1. Find objects</button>
-          <button class="explain-step" type="button" data-caption="Step 2. Read the content stream operators. Tf sets the font. Td moves the cursor. Tj draws visible text.">2. Read operators</button>
-          <button class="explain-step" type="button" data-caption="Step 3. Map glyph codes through the ToUnicode table so raw font symbols become real characters.">3. Map glyphs</button>
-          <button class="explain-step" type="button" data-caption="Step 4. Sort the recovered characters into reading order and stitch the final text together.">4. Build text</button>
+          <button class="explain-step is-active" type="button" data-caption="Step 1 of 7. Open the PDF binary. Everything is stored as numbered objects — like rows in a database. Object 12 is the Page. Object 14 is the Font. Object 15 is the Contents stream.">1. Open file</button>
+          <button class="explain-step" type="button" data-caption="Step 2 of 7. BT — Begin Text. This operator opens a text-drawing context. No character is drawn yet; the parser just knows a block of text is about to start.">2. BT: begin</button>
+          <button class="explain-step" type="button" data-caption="Step 3 of 7. Tf — Set Font. The argument /Helvetica selects the font family. The number 12 sets the size in points. Now the parser knows what the glyphs will look like.">3. Tf: set font</button>
+          <button class="explain-step" type="button" data-caption="Step 4 of 7. Td — Move Cursor. The two numbers are X and Y coordinates on the page (72, 680). The parser moves its invisible pen to this exact position. No ink yet.">4. Td: move</button>
+          <button class="explain-step" type="button" data-caption="Step 5 of 7. Tj — Draw String. The string argument (Complaint Date:) is drawn at the current cursor position using the active font. These are the bytes the parser extracts as text.">5. Tj: draw text</button>
+          <button class="explain-step" type="button" data-caption="Step 6 of 7. Map glyphs. Each byte in the drawn string is a glyph ID. The ToUnicode table inside the font converts these IDs to real Unicode characters. Missing table → garbled output.">6. Map glyphs</button>
+          <button class="explain-step" type="button" data-caption="Step 7 of 7. Sort and assemble. Characters are sorted by their (X, Y) positions into reading order, then stitched into a final text string. For AcroForms, field values are read from /V entries — a separate, faster path.">7. Assemble</button>
+        </div>
+        <div class="stepper-nav">
+          <button class="stepper-btn stepper-prev" type="button">← Prev</button>
+          <span class="stepper-counter">1 / 7</span>
+          <button class="stepper-play-pause" type="button" title="Play / Pause auto-advance">⏸</button>
+          <button class="stepper-btn stepper-next" type="button">Next →</button>
         </div>
         <div class="explain-screen">
+          <!-- Panel 1: object structure -->
           <div class="explain-panel is-active">
             <div class="explain-grid-2">
               <div>
-                <div class="demo-label">Objects the parser follows</div>
+                <div class="demo-label">PDF object tree — what the parser traverses</div>
                 <div class="demo-stack">
-                  <div class="demo-card">
-                    <strong>xref table</strong>
-                    <span>Object 12 points to Page 1.</span>
-                  </div>
-                  <div class="demo-card">
-                    <strong>Page object</strong>
-                    <span>Contains links to fonts and contents.</span>
-                  </div>
-                  <div class="demo-card">
-                    <strong>Font dictionary</strong>
-                    <span>Defines glyph IDs and optional Unicode map.</span>
-                  </div>
-                  <div class="demo-card">
-                    <strong>Contents stream</strong>
-                    <span>Stores the drawing commands for visible text.</span>
-                  </div>
+                  <div class="demo-card"><strong>xref table</strong><span>Object 12 → Page 1.</span></div>
+                  <div class="demo-card"><strong>Page object 12</strong><span>Links to Font obj 14 and Contents obj 15.</span></div>
+                  <div class="demo-card"><strong>Font object 14</strong><span>Defines /Helvetica + ToUnicode table.</span></div>
+                  <div class="demo-card"><strong>Contents stream 15</strong><span>Holds all the drawing operators.</span></div>
                 </div>
               </div>
               <div>
-                <div class="demo-label">Plain-English result</div>
+                <div class="demo-label">Key insight</div>
                 <div class="demo-output">
-                  <div class="demo-output-line"><span>Question</span><strong>Where is the text?</strong></div>
-                  <div class="demo-output-line"><span>Answer</span><strong>Inside objects, not pixels.</strong></div>
+                  <div class="demo-output-line"><span>Storage</span><strong>Objects, not pixels</strong></div>
+                  <div class="demo-output-line"><span>Scan PDF</span><strong>Object is an image — no text</strong></div>
                 </div>
-                <div class="demo-note">If the PDF is only an image scan, this path has almost nothing to read.</div>
+                <div class="demo-note">A scanned PDF stores the page as a raster image object. The contents stream has almost no text operators — extractors return empty string.</div>
               </div>
             </div>
           </div>
+          <!-- Panel 2: BT -->
           <div class="explain-panel">
             <div class="explain-grid-2">
               <div>
-                <div class="demo-label">Content stream</div>
+                <div class="demo-label">Contents stream — BT is executing (blue)</div>
                 <div class="demo-code-lines">
-                  <div class="demo-line"><span class="demo-token operator">BT</span><span>Begin a text block.</span></div>
-                  <div class="demo-line highlight"><span class="demo-token operator">Tf</span><span>Select <strong>/Helvetica 12</strong>.</span></div>
-                  <div class="demo-line highlight"><span class="demo-token amber">Td</span><span>Move to <strong>(72, 680)</strong>.</span></div>
-                  <div class="demo-line highlight"><span class="demo-token green">Tj</span><span>Draw <strong>Complaint Date:</strong></span></div>
-                  <div class="demo-line"><span class="demo-token amber">Td</span><span>Move right for the value.</span></div>
-                  <div class="demo-line"><span class="demo-token green">Tj</span><span>Draw <strong>01/15/2024</strong>.</span></div>
+                  <div class="demo-line highlight"><span class="demo-token operator">BT</span><span>Begin text block — opens drawing context.</span></div>
+                  <div class="demo-line"><span class="demo-token operator">Tf</span><span>Set font (next step).</span></div>
+                  <div class="demo-line"><span class="demo-token amber">Td</span><span>Move cursor (later).</span></div>
+                  <div class="demo-line"><span class="demo-token green">Tj</span><span>Draw string (later).</span></div>
+                  <div class="demo-line"><span class="demo-token operator">ET</span><span>End text block (closes context).</span></div>
                 </div>
               </div>
               <div>
-                <div class="demo-label">What the parser learns</div>
+                <div class="demo-label">What BT means</div>
                 <div class="demo-output">
-                  <div class="demo-output-line"><span>Font</span><strong>Helvetica 12</strong></div>
-                  <div class="demo-output-line"><span>Position</span><strong>(72, 680) then +180</strong></div>
-                  <div class="demo-output-line"><span>Visible strings</span><strong>Label then value</strong></div>
+                  <div class="demo-output-line"><span>Action</span><strong>Opens a text context</strong></div>
+                  <div class="demo-output-line"><span>Characters drawn?</span><strong>None yet</strong></div>
+                  <div class="demo-output-line"><span>Closes with</span><strong>ET operator</strong></div>
                 </div>
+                <div class="demo-note">Every visible text string in a PDF sits between a BT and ET pair. The parser looks for these pairs to know where text regions are.</div>
               </div>
             </div>
           </div>
+          <!-- Panel 3: Tf -->
           <div class="explain-panel">
             <div class="explain-grid-2">
               <div>
-                <div class="demo-label">Glyph code → character</div>
+                <div class="demo-label">Contents stream — Tf is executing (blue)</div>
+                <div class="demo-code-lines">
+                  <div class="demo-line"><span class="demo-token operator">BT</span><span>Begin text block.</span></div>
+                  <div class="demo-line highlight"><span class="demo-token operator">Tf</span><span><strong>/Helvetica 12</strong> — set font + size.</span></div>
+                  <div class="demo-line"><span class="demo-token amber">Td</span><span>Move cursor (next step).</span></div>
+                  <div class="demo-line"><span class="demo-token green">Tj</span><span>Draw string (later).</span></div>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">What Tf does</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Font name</span><strong>/Helvetica</strong></div>
+                  <div class="demo-output-line"><span>Size</span><strong>12 points</strong></div>
+                  <div class="demo-output-line"><span>Affects</span><strong>All Tj draws until next Tf</strong></div>
+                </div>
+                <div class="demo-note">The font name refers to an object in the PDF resource dictionary. That object contains the ToUnicode table — critical for correct character decoding.</div>
+              </div>
+            </div>
+          </div>
+          <!-- Panel 4: Td -->
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Contents stream — Td is executing (blue)</div>
+                <div class="demo-code-lines">
+                  <div class="demo-line"><span class="demo-token operator">BT</span><span>Begin text block.</span></div>
+                  <div class="demo-line"><span class="demo-token operator">Tf</span><span>/Helvetica 12 — font set.</span></div>
+                  <div class="demo-line highlight"><span class="demo-token amber">Td</span><span><strong>72 680</strong> — move pen to column 72, row 680.</span></div>
+                  <div class="demo-line"><span class="demo-token green">Tj</span><span>Draw string (next step).</span></div>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">What Td does</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>X position</span><strong>72 pt from left</strong></div>
+                  <div class="demo-output-line"><span>Y position</span><strong>680 pt from bottom</strong></div>
+                  <div class="demo-output-line"><span>Ink drawn?</span><strong>None — cursor move only</strong></div>
+                </div>
+                <div class="demo-note">PDF coordinates start at bottom-left (0,0). Y=680 places the text near the top of an A4 page. This is how parsers know the reading order — by sorting Td positions.</div>
+              </div>
+            </div>
+          </div>
+          <!-- Panel 5: Tj -->
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Contents stream — Tj is executing (blue)</div>
+                <div class="demo-code-lines">
+                  <div class="demo-line"><span class="demo-token operator">BT</span><span>Begin text block.</span></div>
+                  <div class="demo-line"><span class="demo-token operator">Tf</span><span>/Helvetica 12.</span></div>
+                  <div class="demo-line"><span class="demo-token amber">Td</span><span>72 680 — cursor positioned.</span></div>
+                  <div class="demo-line highlight"><span class="demo-token green">Tj</span><span><strong>(Complaint Date:)</strong> — draw this string now.</span></div>
+                  <div class="demo-line"><span class="demo-token amber">Td</span><span>180 0 — advance right for value.</span></div>
+                  <div class="demo-line highlight"><span class="demo-token green">Tj</span><span><strong>(01/15/2024)</strong> — draw the value.</span></div>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">What Tj does</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Draws</span><strong>The visible string</strong></div>
+                  <div class="demo-output-line"><span>Bytes extracted</span><strong>"Complaint Date:"</strong></div>
+                  <div class="demo-output-line"><span>Then</span><strong>"01/15/2024"</strong></div>
+                </div>
+                <div class="demo-note">Tj is the operator the parser actually reads text from. Blue = both Tj calls. The second Td advances the cursor right so the value appears inline.</div>
+              </div>
+            </div>
+          </div>
+          <!-- Panel 6: glyph mapping -->
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">ToUnicode table: raw glyph IDs → readable characters</div>
                 <div class="glyph-grid">
                   <div class="glyph-row">
                     <div class="glyph-pill">&lt;0043&gt;</div><div class="glyph-arrow">→</div><div class="glyph-pill good">C</div>
@@ -1224,39 +1568,41 @@
                     <div class="glyph-pill">&lt;006D&gt;</div><div class="glyph-arrow">→</div><div class="glyph-pill good">m</div>
                   </div>
                   <div class="glyph-row">
-                    <div class="glyph-pill accent">&lt;F001&gt;</div><div class="glyph-arrow">→</div><div class="glyph-pill accent">#</div>
+                    <div class="glyph-pill accent">&lt;F001&gt;</div><div class="glyph-arrow">→</div><div class="glyph-pill accent"># (custom)</div>
                     <div class="glyph-pill">&lt;0031&gt;</div><div class="glyph-arrow">→</div><div class="glyph-pill good">1</div>
                     <div class="glyph-pill">&lt;0035&gt;</div><div class="glyph-arrow">→</div><div class="glyph-pill good">5</div>
                   </div>
                 </div>
               </div>
               <div>
-                <div class="demo-label">Why this step matters</div>
+                <div class="demo-label">Why this step can fail</div>
                 <div class="demo-output">
-                  <div class="demo-output-line"><span>With ToUnicode</span><strong>Clean text comes out.</strong></div>
-                  <div class="demo-output-line"><span>Without it</span><strong>You get mojibake or blanks.</strong></div>
+                  <div class="demo-output-line"><span>With table</span><strong>Clean Unicode text</strong></div>
+                  <div class="demo-output-line"><span>Missing table</span><strong>Garbled bytes or blanks</strong></div>
                 </div>
-                <div class="demo-note">This is why some form-flattened PDFs look readable on screen but extract badly.</div>
+                <div class="demo-note">Some PDFs use private glyph IDs (like F001 above) that map to non-standard characters. Without the CMap, the parser has no way to recover the real character.</div>
               </div>
             </div>
           </div>
+          <!-- Panel 7: assemble -->
           <div class="explain-panel">
             <div class="explain-grid-2">
               <div>
-                <div class="demo-label">Final extracted text</div>
+                <div class="demo-label">Sorted by position → final extracted text</div>
                 <div class="demo-output">
-                  <div class="demo-output-line"><span>Line 1</span><strong>Complaint Date:</strong></div>
-                  <div class="demo-output-line"><span>Line 2</span><strong>01/15/2024</strong></div>
-                  <div class="demo-output-line"><span>AcroForm note</span><strong><code>/V</code> values may need a second path.</strong></div>
+                  <div class="demo-output-line"><span>Y=680, X=72</span><strong>Complaint Date:</strong></div>
+                  <div class="demo-output-line"><span>Y=680, X=252</span><strong>01/15/2024</strong></div>
+                  <div class="demo-output-line"><span>AcroForm /V</span><strong>Read separately from widget dict</strong></div>
                 </div>
+                <div class="demo-note">Characters sorted by Y (top first), then X (left-to-right) reconstruct reading order. AcroForm <code>/V</code> values bypass this entirely — they're read directly from the annotation dictionary, which is why pypdf achieves 100% Field F1.</div>
               </div>
               <div>
-                <div class="demo-label">Short summary</div>
+                <div class="demo-label">Final result</div>
                 <div class="demo-output">
-                  <div class="demo-output-line"><span>Digital PDF</span><strong>Fast and accurate.</strong></div>
-                  <div class="demo-output-line"><span>Scanned PDF</span><strong>No text layer to follow.</strong></div>
+                  <div class="demo-output-line"><span>Speed</span><strong>415 pages / second</strong></div>
+                  <div class="demo-output-line"><span>Field F1</span><strong>1.00 — perfect</strong></div>
+                  <div class="demo-output-line"><span>Works on scans?</span><strong>No — needs text layer</strong></div>
                 </div>
-                <div class="demo-note">Text extractors win when the page already contains text objects.</div>
               </div>
             </div>
           </div>
@@ -1303,6 +1649,52 @@ endbfchar</div>
       <div class="insight warn" style="margin-top:16px">
         <strong>Why this fails on complaint forms:</strong> scanned PDFs have <em>no content stream</em> — the page is a raster image object. Text extractors return empty string. Also, AcroForm field values live in <code>/V</code> dictionary entries, not content streams — most extractors need a separate code path for forms.
       </div>
+
+      <div class="dialog-thread">
+        <div class="dialog-thread-title">Lecture — tracing a real PDF file in memory</div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar prof">🎓</div>
+          <div class="dialog-body">
+            <div class="dialog-name prof">Professor</div>
+            <div class="dialog-bubble">Let me walk through what happens when pypdf opens a digital complaint form. The binary file opens with <code>%PDF-1.4</code>. Inside are numbered objects — think of them as rows in a database. <strong>Object 12 is the Page. Object 14 is the Font. Object 15 is the Contents stream</strong> — a list of drawing operators like <code>BT</code> (begin text block), <code>Tf</code> (select font), <code>Td</code> (move cursor to position), <code>Tj</code> (draw a text string at the cursor).</div>
+          </div>
+        </div>
+        <div class="dialog-turn is-stu">
+          <div class="dialog-avatar stu">🤔</div>
+          <div class="dialog-body">
+            <div class="dialog-name stu">Student</div>
+            <div class="dialog-bubble">Wait — so text in a PDF is stored as <strong>drawing instructions</strong>, like a painter following a recipe? Not as actual words in a file?</div>
+          </div>
+        </div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar prof">🎓</div>
+          <div class="dialog-body">
+            <div class="dialog-name prof">Professor</div>
+            <div class="dialog-bubble">Exactly. And here's the trap: those drawn strings use the font's own character encoding — not plain Unicode. The <code>ToUnicode</code> table inside the font definition converts raw glyph IDs to readable characters. If that table is missing (common in older PDFs), the parser returns garbled characters — even though the PDF looks perfect in Adobe Reader.</div>
+          </div>
+        </div>
+        <div class="dialog-turn is-stu">
+          <div class="dialog-avatar stu">🤔</div>
+          <div class="dialog-body">
+            <div class="dialog-name stu">Student</div>
+            <div class="dialog-bubble">That explains why pypdf shows CER = 0.49 even on a perfectly clean digital form. But its Field F1 is 1.0 — perfect. How?</div>
+          </div>
+        </div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar prof">🎓</div>
+          <div class="dialog-body">
+            <div class="dialog-name prof">Professor</div>
+            <div class="dialog-bubble"><strong>AcroForm field values live in a completely separate location:</strong> the <code>/V</code> entry of each widget annotation object — not inside the content stream at all. pypdf has a dedicated path that reads these <code>/V</code> entries directly, bypassing the drawing commands entirely. The high CER is a measurement artefact — the ground truth interleaves labels with values in a specific order that doesn't match the content stream's drawing sequence.</div>
+          </div>
+        </div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar exp">⚡</div>
+          <div class="dialog-body">
+            <div class="dialog-name exp">Expert insight</div>
+            <div class="dialog-bubble">This is the most common trap in PDF benchmarks: <strong>never use CER or WER as the primary metric for AcroForms.</strong> CER measures whether two text strings match character-for-character in the same order — but AcroForms are structured data, not prose. The correct metric is Field F1: did you extract the right value for each named field? pypdf scores 1.0 on Field F1, meaning it extracted every form field correctly — which is what actually matters for a complaint processing pipeline.</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ── 3.2 OCR ── -->
@@ -1310,7 +1702,7 @@ endbfchar</div>
       <div class="viz-title">Category 2 — Traditional OCR (Tesseract · PaddleOCR PP-OCRv4<span class="cite"><a href="#ref-6">[6]</a></span>)</div>
       <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">Converts a raster image into text through a multi-stage vision pipeline. Each stage is a prerequisite for the next.</p>
 
-      <div class="explain-demo js-stepper" data-interval="2600">
+      <div class="explain-demo js-stepper" data-interval="6000">
         <div class="explain-head">
           <div>
             <div class="explain-kicker">Animated walkthrough</div>
@@ -1324,6 +1716,12 @@ endbfchar</div>
           <button class="explain-step" type="button" data-caption="Step 3. Find lines and word boxes. Tesseract uses heuristics. PaddleOCR learns the boxes directly.">3. Find words</button>
           <button class="explain-step" type="button" data-caption="Step 4. Read each crop into characters or tokens. This is the actual recognition stage.">4. Read letters</button>
           <button class="explain-step" type="button" data-caption="Step 5. Rescore the output and emit final text. A language model can fix low-confidence mistakes.">5. Final text</button>
+        </div>
+        <div class="stepper-nav">
+          <button class="stepper-btn stepper-prev" type="button">← Prev</button>
+          <span class="stepper-counter">1 / 5</span>
+          <button class="stepper-play-pause" type="button" title="Play / Pause auto-advance">⏸</button>
+          <button class="stepper-btn stepper-next" type="button">Next →</button>
         </div>
         <div class="explain-screen">
           <div class="explain-panel is-active">
@@ -1392,11 +1790,12 @@ endbfchar</div>
           <div class="explain-panel">
             <div class="explain-grid-2">
               <div>
-                <div class="demo-label">Character reading</div>
+                <div class="demo-label">Raw character read — what OCR sees</div>
                 <div class="ocr-char-row">
                   <div class="ocr-char good">C</div>
                   <div class="ocr-char good">o</div>
-                  <div class="ocr-char good">m</div>
+                  <div class="ocr-char fix" title="misread: 'r' + 'n' decoded instead of 'm'">r</div>
+                  <div class="ocr-char fix" title="misread: second glyph of the confused 'rn' pair">n</div>
                   <div class="ocr-char good">p</div>
                   <div class="ocr-char good">l</div>
                   <div class="ocr-char good">a</div>
@@ -1404,13 +1803,13 @@ endbfchar</div>
                   <div class="ocr-char good">n</div>
                   <div class="ocr-char good">t</div>
                 </div>
-                <div class="demo-note">The recognizer converts each cropped word image into tokens.</div>
+                <div class="demo-note"><span style="color:var(--green)">Green = confident match.</span> <span style="color:var(--amber)">Amber = low-confidence: OCR read <strong>rn</strong> but the actual glyph is <strong>m</strong>.</span></div>
               </div>
               <div>
                 <div class="demo-label">Model output</div>
                 <div class="demo-output">
-                  <div class="demo-output-line"><span>Raw decode</span><strong>Comprlaint</strong></div>
-                  <div class="demo-output-line"><span>Low-confidence area</span><strong><code>rn</code> vs <code>m</code></strong></div>
+                  <div class="demo-output-line"><span>Raw decode</span><strong>Cornplaint</strong></div>
+                  <div class="demo-output-line"><span>Low-confidence area</span><strong><code>rn</code> confused for <code>m</code></strong></div>
                 </div>
               </div>
             </div>
@@ -1444,19 +1843,19 @@ endbfchar</div>
       </div>
 
       <div class="pipeline">
-        <div class="pipe-node warn">Raster image<sub>from PDF or scan</sub></div>
+        <div class="pipe-node warn">Raster image<sub>scanned page</sub></div>
         <div class="pipe-arrow">→</div>
-        <div class="pipe-node">Binarization<sub>Otsu / Sauvola</sub></div>
+        <div class="pipe-node">Binarize<sub>Otsu / Sauvola</sub></div>
         <div class="pipe-arrow">→</div>
         <div class="pipe-node">Deskew<sub>Hough transform</sub></div>
         <div class="pipe-arrow">→</div>
-        <div class="pipe-node">Layout analysis<sub>connected components</sub></div>
+        <div class="pipe-node">Detect words<sub>find ink blobs</sub></div>
         <div class="pipe-arrow">→</div>
-        <div class="pipe-node">Word segmentation<sub>projection profiles</sub></div>
+        <div class="pipe-node">Word split<sub>projection profiles</sub></div>
         <div class="pipe-arrow">→</div>
-        <div class="pipe-node active">LSTM classifier<sub>character → token</sub></div>
+        <div class="pipe-node active">LSTM read<sub>char → token</sub></div>
         <div class="pipe-arrow">→</div>
-        <div class="pipe-node active">Language model<sub>beam search decode</sub></div>
+        <div class="pipe-node active">LM rescore<sub>beam search</sub></div>
       </div>
 
       <div class="viz-row cols-2" style="margin-top:24px;gap:32px;align-items:start">
@@ -1487,37 +1886,282 @@ endbfchar</div>
       <div class="insight" style="margin-top:16px">
         <strong>Why 300 DPI matters:</strong> a character that is 3mm tall on paper = <strong>35 px at 300 DPI</strong> vs <strong>24 px at 200 DPI</strong>. The LSTM window is fixed — at 200 DPI, ascenders and descenders merge into adjacent rows. Below 200 DPI accuracy drops off a cliff (~56% CER on complaint forms).
       </div>
+
+      <div class="dialog-thread">
+        <div class="dialog-thread-title">Lecture — pixel density, binarization, and why preprocessing can hurt</div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar prof">🎓</div>
+          <div class="dialog-body">
+            <div class="dialog-name prof">Professor</div>
+            <div class="dialog-bubble">Let me explain <em>exactly</em> what the Tesseract LSTM sees. It receives a word-height image crop — typically 48 pixels tall in its default mode. Inside that crop, it reads left to right, predicting character probabilities at each horizontal position. If two characters overlap vertically because the image resolution is too low, the LSTM gets confused — it sees one ambiguous blob where two characters should be.</div>
+          </div>
+        </div>
+        <div class="dialog-turn is-stu">
+          <div class="dialog-avatar stu">🤔</div>
+          <div class="dialog-body">
+            <div class="dialog-name stu">Student</div>
+            <div class="dialog-bubble">Can't we just scan at 600 DPI to give the model more pixels and better accuracy?</div>
+          </div>
+        </div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar prof">🎓</div>
+          <div class="dialog-body">
+            <div class="dialog-name prof">Professor</div>
+            <div class="dialog-bubble">Higher DPI helps up to a point — but the bottleneck often shifts to <strong>binarization</strong>. The first real step in any OCR pipeline is converting the image to pure black and white. Otsu's algorithm finds a single global brightness threshold for the entire page. Now, if your complaint form has a coffee stain in one corner and clean white paper elsewhere, that global threshold is simultaneously too high in one area and too low in another.</div>
+          </div>
+        </div>
+        <div class="dialog-turn is-stu">
+          <div class="dialog-avatar stu">🤔</div>
+          <div class="dialog-body">
+            <div class="dialog-name stu">Student</div>
+            <div class="dialog-bubble">Is that what Sauvola binarization fixes? Our preprocessing code uses it...</div>
+          </div>
+        </div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar prof">🎓</div>
+          <div class="dialog-body">
+            <div class="dialog-name prof">Professor</div>
+            <div class="dialog-bubble">Exactly — Sauvola divides the page into overlapping tiles and computes a <em>local</em> threshold for each one, adapting to local contrast. For fax-quality or coffee-stained scans it is dramatically better. <strong>But</strong> — and this is what our benchmark showed on FUNSD — on an already-clean 300 DPI scan, Sauvola's local window over-sharpens thin pen strokes. CER went from 0.484 → 0.560. Preprocessing <em>hurt</em>.</div>
+          </div>
+        </div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar exp">⚡</div>
+          <div class="dialog-body">
+            <div class="dialog-name exp">Expert insight</div>
+            <div class="dialog-bubble">The practical rule: <strong>gate preprocessing on measured image quality</strong>, not a global flag. In the code, <code>check_dpi()</code> returns the scan resolution. If DPI &lt; 200, or skew angle &gt; 1°, or contrast ratio &lt; 50 — apply the full pipeline (deskew → denoise → CLAHE → Sauvola). Otherwise, feed the raw image to Tesseract. Running the full pipeline on adequate-quality inputs makes it 4× slower with no accuracy gain — a trade-off that is never worth making.</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ── 3.3 ML layout parsers ── -->
     <div class="viz reveal">
       <div class="viz-title">Category 3 — ML layout parsing (Docling · TableFormer)</div>
-      <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">Treats a document page as a 2-D object to detect with vision transformers, not as a byte stream or a bag of characters.</p>
+      <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">Treats a document page as a 2-D photograph and applies <strong style="color:var(--text)">object detection</strong> to it — not byte parsing, not pixel thresholding, but vision-model inference that recognises regions and reconstructs table structure from learned patterns across 500,000 document images.</p>
 
-      <div class="viz-row cols-2" style="gap:32px;align-items:start">
-        <div>
-          <p style="font-size:0.85rem;font-weight:600;margin-bottom:12px;color:var(--text)">Layout analysis with DiT / DocBankNet</p>
-          <ol style="font-size:0.85rem;color:var(--text-secondary);line-height:1.8;padding-left:20px">
-            <li><strong style="color:var(--text)">Patch embedding</strong> — the page image is cut into 16×16 pixel patches (ViT-style). Each patch becomes a token in a transformer sequence.</li>
-            <li><strong style="color:var(--text)">Self-attention</strong> — the transformer learns which patches belong together (e.g., a table header patch attends to its column patches across many rows).</li>
-            <li><strong style="color:var(--text)">Region classification</strong> — a detection head predicts bounding boxes and labels: <em>text block, heading, table, figure, caption, footnote</em>.</li>
-            <li><strong style="color:var(--text)">Reading order</strong> — a separate model predicts the correct top-to-bottom, column-aware reading sequence across detected regions.</li>
-          </ol>
-        </div>
-        <div>
-          <p style="font-size:0.85rem;font-weight:600;margin-bottom:12px;color:var(--text)">TableFormer: how tables are reconstructed</p>
-          <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.7;margin-bottom:10px">Table structure is modelled as a <em>sequence prediction problem</em>. Given a cropped table image, the model predicts an HTML token sequence (<code>&lt;tr&gt;&lt;td&gt;...&lt;/td&gt;&lt;/tr&gt;</code>) using an encoder-decoder transformer trained on PubTabNet (500K annotated tables).</p>
-          <div class="pipeline" style="flex-direction:column;gap:6px">
-            <div class="pipe-node" style="min-width:0">Table region crop (from layout step)</div>
-            <div class="pipe-arrow" style="transform:rotate(90deg);margin:0 auto">→</div>
-            <div class="pipe-node active" style="min-width:0">TableFormer encoder → patch features</div>
-            <div class="pipe-arrow" style="transform:rotate(90deg);margin:0 auto">→</div>
-            <div class="pipe-node active" style="min-width:0">Autoregressive decoder → HTML tokens</div>
-            <div class="pipe-arrow" style="transform:rotate(90deg);margin:0 auto">→</div>
-            <div class="pipe-node" style="min-width:0">Cell text from OCR overlay → final table</div>
+      <div class="explain-demo js-stepper" data-interval="6000">
+        <div class="explain-head">
+          <div>
+            <div class="explain-kicker">Animated walkthrough — Docling 5-stage pipeline</div>
+            <p class="explain-caption" aria-live="polite">Step 1. The page image is sliced into a grid of 16×16 pixel patches — the same way modern AI image models process photographs. Each patch becomes one token (a 768-dimensional vector).</p>
           </div>
-          <p style="font-size:0.78rem;color:var(--muted);margin-top:10px">This is why Docling handles merged cells and spanning headers — it predicts the HTML structure first, then fills text in, rather than trying to infer structure from text positions.</p>
+          <span class="tag blue">Tap a step or let it play</span>
         </div>
+        <div class="explain-steps">
+          <button class="explain-step is-active" type="button" data-caption="Step 1. The page image is sliced into a grid of 16×16 pixel patches — the same way modern AI image models process photographs. Each patch becomes one token (a 768-dimensional vector).">1. Slice page</button>
+          <button class="explain-step" type="button" data-caption="Step 2. Self-attention lets every patch communicate with every other patch. A table header patch learns it belongs with its data cells, even if they are 30 rows apart. Long-range relationships that trip up rule-based parsers are trivial for attention.">2. Attention</button>
+          <button class="explain-step" type="button" data-caption="Step 3. A detection head assigns a class label and bounding box to each region: heading, text block, table, figure, caption. Each region type gets routed to a different downstream processor.">3. Label regions</button>
+          <button class="explain-step" type="button" data-caption="Step 4. Each detected table crop goes to TableFormer — an encoder-decoder transformer that generates the HTML structure token by token. It predicts &lt;tr&gt;, &lt;td&gt;, colspan= before the text content is filled in.">4. Decode table</button>
+          <button class="explain-step" type="button" data-caption="Step 5. Text and OCR layers fill the cells. Reading order is sorted. The output is structured Markdown, JSON, or HTML — correct column structure, correct spans, correct reading sequence.">5. Final output</button>
+        </div>
+        <div class="stepper-nav">
+          <button class="stepper-btn stepper-prev" type="button">← Prev</button>
+          <span class="stepper-counter">1 / 5</span>
+          <button class="stepper-play-pause" type="button" title="Play / Pause auto-advance">⏸</button>
+          <button class="stepper-btn stepper-next" type="button">Next →</button>
+        </div>
+        <div class="explain-screen">
+
+          <!-- Panel 1: patch grid -->
+          <div class="explain-panel is-active">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Page divided into 16×16 px patches — colour shows region type</div>
+                <div class="attn-grid">
+                  <div class="attn-cell c-heading"></div><div class="attn-cell c-heading"></div><div class="attn-cell c-heading"></div><div class="attn-cell c-heading"></div><div class="attn-cell c-heading"></div><div class="attn-cell c-heading"></div><div class="attn-cell c-heading"></div><div class="attn-cell c-heading"></div>
+                  <div class="attn-cell c-text"></div><div class="attn-cell c-text"></div><div class="attn-cell c-text"></div><div class="attn-cell c-text"></div><div class="attn-cell c-text"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div>
+                  <div class="attn-cell c-table"></div><div class="attn-cell c-table"></div><div class="attn-cell c-table"></div><div class="attn-cell c-table"></div><div class="attn-cell c-table"></div><div class="attn-cell c-table"></div><div class="attn-cell c-table"></div><div class="attn-cell c-table"></div>
+                  <div class="attn-cell c-table"></div><div class="attn-cell c-table"></div><div class="attn-cell c-table"></div><div class="attn-cell c-table"></div><div class="attn-cell c-table"></div><div class="attn-cell c-table"></div><div class="attn-cell c-table"></div><div class="attn-cell c-table"></div>
+                  <div class="attn-cell c-text"></div><div class="attn-cell c-text"></div><div class="attn-cell c-text"></div><div class="attn-cell c-text"></div><div class="attn-cell c-text"></div><div class="attn-cell c-text"></div><div class="attn-cell"></div><div class="attn-cell"></div>
+                  <div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div>
+                </div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:0.72rem">
+                  <span style="color:var(--purple)">■ heading</span>
+                  <span style="color:var(--green)">■ text</span>
+                  <span style="color:var(--amber)">■ table</span>
+                  <span style="color:var(--muted)">■ blank</span>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">What this produces</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Input</span><strong>Full page image</strong></div>
+                  <div class="demo-output-line"><span>Each patch</span><strong>768-dim embedding vector</strong></div>
+                  <div class="demo-output-line"><span>Sequence length</span><strong>~1024 tokens / letter page</strong></div>
+                </div>
+                <div class="demo-note">This is the same operation GPT-4V and image classifiers use. The document is treated as a visual object — no text layer required, works on scans.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 2: attention map -->
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Attention map — table header row attends to data cells below</div>
+                <div class="attn-grid">
+                  <div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div>
+                  <div class="attn-cell hot-3"></div><div class="attn-cell hot-3"></div><div class="attn-cell hot-2"></div><div class="attn-cell hot-1"></div><div class="attn-cell hot-2"></div><div class="attn-cell hot-3"></div><div class="attn-cell hot-3"></div><div class="attn-cell"></div>
+                  <div class="attn-cell hot-2"></div><div class="attn-cell hot-1"></div><div class="attn-cell hot-1"></div><div class="attn-cell hot-2"></div><div class="attn-cell hot-1"></div><div class="attn-cell hot-2"></div><div class="attn-cell hot-2"></div><div class="attn-cell hot-3"></div>
+                  <div class="attn-cell hot-2"></div><div class="attn-cell hot-2"></div><div class="attn-cell hot-3"></div><div class="attn-cell hot-2"></div><div class="attn-cell hot-1"></div><div class="attn-cell hot-2"></div><div class="attn-cell hot-3"></div><div class="attn-cell"></div>
+                  <div class="attn-cell hot-3"></div><div class="attn-cell hot-3"></div><div class="attn-cell"></div><div class="attn-cell hot-3"></div><div class="attn-cell hot-2"></div><div class="attn-cell hot-3"></div><div class="attn-cell"></div><div class="attn-cell"></div>
+                  <div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div><div class="attn-cell"></div>
+                </div>
+                <div class="demo-note">Blue intensity = attention weight. Row 2 (header) strongly attends to the rows below — the model learns column membership, not just proximity.</div>
+              </div>
+              <div>
+                <div class="demo-label">Why attention beats rules</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Rules</span><strong>Fail on borderless tables</strong></div>
+                  <div class="demo-output-line"><span>Rules</span><strong>Fail on merged cells</strong></div>
+                  <div class="demo-output-line"><span>Attention</span><strong>Handles any distance, any layout</strong></div>
+                </div>
+                <div class="demo-note">A spanning header and its column cells can be 300+ pixels apart. Self-attention handles this trivially; rule-based line detection cannot.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 3: region classification -->
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Detection head output — labelled bounding boxes</div>
+                <div class="region-demo">
+                  <div class="region-box type-heading">Customer Complaint Form — Q1 2024 <span class="region-label">HEADING</span></div>
+                  <div class="region-box type-text">The customer reported that the product arrived damaged on 15 January… <span class="region-label">TEXT</span></div>
+                  <div class="region-box type-table">Claim ID · Date · Amount · Status · Assigned To <span class="region-label">TABLE →TableFormer</span></div>
+                </div>
+              </div>
+              <div>
+                <div class="demo-label">Output classes (DiT vocabulary)</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span style="color:var(--purple)">Heading</span><strong>Title, section header</strong></div>
+                  <div class="demo-output-line"><span style="color:var(--green)">Text block</span><strong>Body paragraph, list item</strong></div>
+                  <div class="demo-output-line"><span style="color:var(--amber)">Table</span><strong>Cropped → TableFormer</strong></div>
+                  <div class="demo-output-line"><span style="color:var(--muted)">Figure / Caption</span><strong>Image or chart region</strong></div>
+                </div>
+                <div class="demo-note">Tables are cropped at this point and handed off to the specialised TableFormer model for structure reconstruction.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 4: TableFormer decode -->
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">TableFormer predicts HTML tokens one by one</div>
+                <div class="token-stream">
+                  <span class="tok struct">&lt;thead&gt;</span>
+                  <span class="tok struct">&lt;tr&gt;</span>
+                  <span class="tok struct">&lt;td&gt;</span>
+                  <span class="tok content">Claim ID</span>
+                  <span class="tok struct">&lt;/td&gt;</span>
+                  <span class="tok struct">&lt;td&gt;</span>
+                  <span class="tok content">Date</span>
+                  <span class="tok struct">&lt;/td&gt;</span>
+                  <span class="tok struct">&lt;td colspan="2"&gt;</span>
+                  <span class="tok content">Amount &amp; Status</span>
+                  <span class="tok struct">&lt;/td&gt;</span>
+                  <span class="tok struct">&lt;/tr&gt;</span>
+                  <span class="tok end">&lt;/thead&gt;</span>
+                  <span class="tok struct">&lt;tbody&gt;</span>
+                  <span class="tok struct">&lt;tr&gt;</span>
+                  <span class="tok struct">&lt;td&gt;</span>
+                  <span class="tok content">C-0042</span>
+                  <span class="tok end">…</span>
+                </div>
+                <div class="demo-note" style="margin-top:10px">Blue = HTML structure tokens predicted by the model. Green = text content (filled from OCR / text layer after structure is finalised). Notice <code>colspan="2"</code> — a merged cell, impossible to detect with line-finding rules.</div>
+              </div>
+              <div>
+                <div class="demo-label">Why sequence prediction wins</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Rule-based</span><strong>Find lines → infer grid</strong></div>
+                  <div class="demo-output-line"><span>TableFormer</span><strong>Predict structure → fill text</strong></div>
+                  <div class="demo-output-line"><span>Training</span><strong>500K PubTabNet tables</strong></div>
+                </div>
+                <div class="demo-note">The model has seen every possible merged-cell, spanning-header, and nested-table configuration across half a million scientific paper tables.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 5: final output -->
+          <div class="explain-panel">
+            <div class="explain-grid-2">
+              <div>
+                <div class="demo-label">Docling final output — ready for downstream NLP</div>
+                <pre class="code-block" style="font-size:0.74rem;margin:0;padding:12px;line-height:1.5">## Customer Complaint Form — Q1 2024
+
+The customer reported that the product arrived
+damaged on 15 January...
+
+| Claim ID | Date       | Amount &amp; Status |
+|----------|------------|------------------|
+| C-0042   | 2024-01-15 | $142 · Pending   |
+| C-0043   | 2024-01-16 | $89  · Resolved  |</pre>
+              </div>
+              <div>
+                <div class="demo-label">What Docling exports</div>
+                <div class="demo-output">
+                  <div class="demo-output-line"><span>Formats</span><strong>Markdown, JSON, HTML</strong></div>
+                  <div class="demo-output-line"><span>Tables</span><strong>Correct row/column grid + spans</strong></div>
+                  <div class="demo-output-line"><span>Reading order</span><strong>Correct multi-column sequence</strong></div>
+                </div>
+                <div class="demo-note">No regex cleanup. No column-merging hacks. No reading-order guessing. The output is directly usable by LLMs, search indexes, and downstream form extraction pipelines.</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="dialog-thread">
+        <div class="dialog-thread-title">Lecture — why ML layout is a completely different category</div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar prof">🎓</div>
+          <div class="dialog-body">
+            <div class="dialog-name prof">Professor</div>
+            <div class="dialog-bubble">Docling's core insight is to treat a document page as a <strong>2D photograph</strong> and apply object detection — the same technology your phone uses to identify faces. Instead of 'face' or 'car', the output classes are 'text block', 'table', 'heading', 'figure', 'caption', 'footnote'.</div>
+          </div>
+        </div>
+        <div class="dialog-turn is-stu">
+          <div class="dialog-avatar stu">🤔</div>
+          <div class="dialog-body">
+            <div class="dialog-name stu">Student</div>
+            <div class="dialog-bubble">Can't you detect tables more simply, by just looking for horizontal and vertical lines on the page?</div>
+          </div>
+        </div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar prof">🎓</div>
+          <div class="dialog-body">
+            <div class="dialog-name prof">Professor</div>
+            <div class="dialog-bubble">That works for perfectly typeset PDFs with visible borders — maybe 60% of real-world documents. Real complaint forms often have <strong>borderless tables</strong> with rows separated only by spacing. Merged cells. Headers spanning three columns. Scanned forms where the ink lines are smudged or missing. Rule-based detection fails on all of these. TableFormer predicts the structure as a <em>sequence of HTML tokens</em> — it has learned every possible table layout from 500,000 training examples.</div>
+          </div>
+        </div>
+        <div class="dialog-turn is-stu">
+          <div class="dialog-avatar stu">🤔</div>
+          <div class="dialog-body">
+            <div class="dialog-name stu">Student</div>
+            <div class="dialog-bubble">If Docling is so much better, why not always use it for everything?</div>
+          </div>
+        </div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar prof">🎓</div>
+          <div class="dialog-body">
+            <div class="dialog-name prof">Professor</div>
+            <div class="dialog-bubble"><strong>Cost and speed.</strong> Docling runs a 86-million-parameter vision model on every page. On a CPU, that is roughly 0.5–2 seconds per page. Compare that to pypdf at 415 pages per second for a digital AcroForm. For a pipeline processing 10,000 forms a day, spending 1.2 seconds per page means &gt;3 hours of compute — versus seconds with a text extractor. The right tool depends on the document type.</div>
+          </div>
+        </div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar exp">⚡</div>
+          <div class="dialog-body">
+            <div class="dialog-name exp">Expert insight</div>
+            <div class="dialog-bubble">Docling's DiT backbone (DeiT-B architecture, 86M parameters) was pre-trained on <strong>DocBank</strong> (500K document images) and <strong>PubLayNet</strong> (360K annotated pages). This breadth is why it generalises to complaint form layouts it has never seen. TableFormer adds another ~50M parameters specifically for table structure prediction. The total pipeline — layout detection + table reconstruction + OCR fallback — costs approximately <strong>1.2 seconds per page</strong> on Apple Silicon CPU.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="insight" style="margin-top:4px">
+        <strong>When to choose Docling:</strong> any document that has complex tables, multi-column layouts, scanned pages, or mixed content where reading order matters. For simple digital AcroForms, Category 1 (text extraction) is 800× faster and equally accurate.
       </div>
     </div>
 
@@ -1526,7 +2170,7 @@ endbfchar</div>
       <div class="viz-title">Category 4 — Handwriting recognition (TrOCR<span class="cite"><a href="#ref-5">[5]</a></span>)</div>
       <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">Microsoft TrOCR is a Vision-Encoder–Language-Decoder transformer trained entirely on handwritten text images. It never uses sliding windows or character classifiers.</p>
 
-      <div class="explain-demo js-stepper" data-interval="2800">
+      <div class="explain-demo js-stepper" data-interval="6000">
         <div class="explain-head">
           <div>
             <div class="explain-kicker">Animated walkthrough</div>
@@ -1539,6 +2183,12 @@ endbfchar</div>
           <button class="explain-step" type="button" data-caption="Step 2. Split the image into patches. The encoder turns each patch into a visual token.">2. Encode patches</button>
           <button class="explain-step" type="button" data-caption="Step 3. Decode one token at a time. The decoder keeps looking back at the relevant ink patches.">3. Read letters</button>
           <button class="explain-step" type="button" data-caption="Step 4. Emit the final text string for that field. Confidence still matters on messy real forms.">4. Emit text</button>
+        </div>
+        <div class="stepper-nav">
+          <button class="stepper-btn stepper-prev" type="button">← Prev</button>
+          <span class="stepper-counter">1 / 4</span>
+          <button class="stepper-play-pause" type="button" title="Play / Pause auto-advance">⏸</button>
+          <button class="stepper-btn stepper-next" type="button">Next →</button>
         </div>
         <div class="explain-screen">
           <div class="explain-panel is-active">
@@ -1568,21 +2218,89 @@ endbfchar</div>
           <div class="explain-panel">
             <div class="explain-grid-2">
               <div>
-                <div class="demo-label">Patch tokens from the crop</div>
-                <div class="patch-grid-demo">
-                  <div class="patch-cell"></div><div class="patch-cell"></div><div class="patch-cell hot"></div><div class="patch-cell hot"></div><div class="patch-cell"></div><div class="patch-cell"></div>
-                  <div class="patch-cell"></div><div class="patch-cell ink"></div><div class="patch-cell hot"></div><div class="patch-cell hot"></div><div class="patch-cell ink"></div><div class="patch-cell"></div>
-                  <div class="patch-cell ink"></div><div class="patch-cell ink"></div><div class="patch-cell hot"></div><div class="patch-cell hot"></div><div class="patch-cell ink"></div><div class="patch-cell"></div>
-                  <div class="patch-cell"></div><div class="patch-cell ink"></div><div class="patch-cell hot"></div><div class="patch-cell hot"></div><div class="patch-cell"></div><div class="patch-cell"></div>
+                <div class="demo-label">One handwritten field image</div>
+                <p class="patch-stage-note">This stage is still vision only. The model has <strong>not</strong> read any letters yet. It only receives one cropped image and cuts it into small squares.</p>
+
+                <!-- One cropped image with the patch grid drawn on top -->
+                <svg viewBox="0 0 250 72" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:10px;display:block;margin-bottom:6px">
+                  <rect width="250" height="72" rx="8" fill="#13131a"/>
+                  <rect x="0"   y="0" width="50" height="72" fill="rgba(56,189,248,0.07)"/>
+                  <rect x="50"  y="0" width="50" height="72" fill="rgba(245,158,11,0.07)"/>
+                  <rect x="100" y="0" width="50" height="72" fill="rgba(34,197,94,0.07)"/>
+                  <rect x="150" y="0" width="50" height="72" fill="rgba(239,68,68,0.07)"/>
+                  <rect x="200" y="0" width="50" height="72" fill="rgba(56,189,248,0.07)"/>
+                  <text x="20"  y="56" font-family="Georgia,serif" font-size="46" font-weight="700" fill="rgba(56,189,248,0.9)">J</text>
+                  <text x="68"  y="56" font-family="Georgia,serif" font-size="46" font-weight="700" fill="rgba(245,158,11,0.9)">o</text>
+                  <text x="115" y="56" font-family="Georgia,serif" font-size="46" font-weight="700" fill="rgba(34,197,94,0.9)">n</text>
+                  <text x="160" y="56" font-family="Georgia,serif" font-size="46" font-weight="700" fill="rgba(239,68,68,0.9)">e</text>
+                  <text x="206" y="56" font-family="Georgia,serif" font-size="46" font-weight="700" fill="rgba(56,189,248,0.9)">s</text>
+                  <line x1="50"  y1="0" x2="50"  y2="72" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
+                  <line x1="100" y1="0" x2="100" y2="72" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
+                  <line x1="150" y1="0" x2="150" y2="72" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
+                  <line x1="200" y1="0" x2="200" y2="72" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
+                  <line x1="0" y1="18" x2="250" y2="18" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
+                  <line x1="0" y1="36" x2="250" y2="36" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
+                  <line x1="0" y1="54" x2="250" y2="54" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
+                  <rect width="250" height="72" rx="8" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                </svg>
+                <p class="patch-source-caption"><strong style="color:var(--text)">Top:</strong> one cropped image of the word. The dashed grid shows the 20 patches the encoder creates from that single image.</p>
+
+                <div class="demo-label">Those 20 patches become 20 visual tokens</div>
+                <div class="patch-grid-outer">
+                  <div class="patch-col-label">left</div>
+                  <div class="patch-col-label focus">focus near “o”</div>
+                  <div class="patch-col-label">mid</div>
+                  <div class="patch-col-label">right-mid</div>
+                  <div class="patch-col-label">right</div>
                 </div>
+                <div class="patch-grid-with-rows">
+                  <div class="patch-row-labels">
+                    <div class="patch-row-label">top band</div>
+                    <div class="patch-row-label">upper</div>
+                    <div class="patch-row-label">lower</div>
+                    <div class="patch-row-label">bottom</div>
+                  </div>
+                  <div class="patch-grid-demo">
+                    <div class="patch-cell"></div>
+                    <div class="patch-cell hot"></div>
+                    <div class="patch-cell ink"></div>
+                    <div class="patch-cell ink"></div>
+                    <div class="patch-cell"></div>
+
+                    <div class="patch-cell ink"></div>
+                    <div class="patch-cell hot"></div>
+                    <div class="patch-cell ink"></div>
+                    <div class="patch-cell ink"></div>
+                    <div class="patch-cell ink"></div>
+
+                    <div class="patch-cell ink"></div>
+                    <div class="patch-cell hot"></div>
+                    <div class="patch-cell ink"></div>
+                    <div class="patch-cell"></div>
+                    <div class="patch-cell ink"></div>
+
+                    <div class="patch-cell ink"></div>
+                    <div class="patch-cell hot"></div>
+                    <div class="patch-cell"></div>
+                    <div class="patch-cell"></div>
+                    <div class="patch-cell ink"></div>
+                  </div>
+                </div>
+                <div class="patch-legend">
+                  <span class="patch-legend-item"><span class="patch-legend-dot hot"></span>patches the decoder is focusing on right now</span>
+                  <span class="patch-legend-item"><span class="patch-legend-dot ink"></span>patches with heavier pen strokes</span>
+                  <span class="patch-legend-item"><span class="patch-legend-dot"></span>mostly background or spacing</span>
+                </div>
+                <p class="patch-callout">Nothing here is a repeated copy of the word. The bottom grid is just the <strong>same single image</strong>, sliced into 20 little squares so the encoder can turn pixels into tokens.</p>
               </div>
               <div>
                 <div class="demo-label">What the encoder does</div>
                 <div class="demo-output">
                   <div class="demo-output-line"><span>Unit</span><strong>16×16 pixel patches</strong></div>
                   <div class="demo-output-line"><span>Output</span><strong>A sequence of visual tokens</strong></div>
+                  <div class="demo-output-line"><span>Still missing</span><strong>No final text yet</strong></div>
                 </div>
-                <div class="demo-note">Dark patches carry the pen strokes. Blank patches mostly provide spacing context.</div>
+                <div class="demo-note">The encoder turns image pieces into vectors. The next step is where the decoder converts those vectors into letters.</div>
               </div>
             </div>
           </div>
@@ -1648,6 +2366,52 @@ endbfchar</div>
         </div>
         <div class="insight warn" style="margin:0">
           <strong>What TrOCR gets wrong:</strong> real complaint forms have noisy, degraded, variable-size handwriting. CER degrades to 30–60% on real-world inputs. The model was trained on curated single-writer samples. Use it per-field, not whole-page.
+        </div>
+      </div>
+
+      <div class="dialog-thread">
+        <div class="dialog-thread-title">Lecture — why TrOCR never needs to find character boundaries</div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar prof">🎓</div>
+          <div class="dialog-body">
+            <div class="dialog-name prof">Professor</div>
+            <div class="dialog-bubble">Traditional OCR has a fundamental <strong>chicken-and-egg problem</strong>: to read handwriting you need to segment it into individual characters, but to know where the boundaries are, you already need to know what the characters look like. Tesseract and PaddleOCR work around this using projection profiles — looking for white vertical gaps between characters. That approach fails completely on cursive script where letters are physically connected with no white gap.</div>
+          </div>
+        </div>
+        <div class="dialog-turn is-stu">
+          <div class="dialog-avatar stu">🤔</div>
+          <div class="dialog-body">
+            <div class="dialog-name stu">Student</div>
+            <div class="dialog-bubble">So how does TrOCR solve this? Where does the letter boundary detection happen?</div>
+          </div>
+        </div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar prof">🎓</div>
+          <div class="dialog-body">
+            <div class="dialog-name prof">Professor</div>
+            <div class="dialog-bubble"><strong>It doesn't happen — that's the elegant part.</strong> TrOCR takes the entire field image as input and asks a language decoder: "given all these visual patches, what is the most likely Unicode character sequence?" At each decoding step, <em>cross-attention</em> focuses on whichever patches contain the ink relevant to the current character. For the letter 'J', the decoder attends to the top-left patches where the vertical descending stroke lives. For 'o', it attends to the curved-loop patches. Segmentation is implicit in the attention weights — never explicitly computed.</div>
+          </div>
+        </div>
+        <div class="dialog-turn is-stu">
+          <div class="dialog-avatar stu">🤔</div>
+          <div class="dialog-body">
+            <div class="dialog-name stu">Student</div>
+            <div class="dialog-bubble">So if someone writes 'Jones' in connected cursive with no white gaps at all, TrOCR just reads the whole word and the model figures out the boundaries from context?</div>
+          </div>
+        </div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar prof">🎓</div>
+          <div class="dialog-body">
+            <div class="dialog-name prof">Professor</div>
+            <div class="dialog-bubble">Precisely — and that is exactly why CER is 2.9% on clean IAM handwriting. Traditional character-segmentation OCR breaks badly on connected script. TrOCR handles it naturally. <strong>The limitation is training data</strong>: the model learned from curated, single-writer samples. Real complaint forms have degraded ink, mixed print and handwriting, and variable letter forms from hundreds of different writers. CER degrades to 30–60% on these — which is why we run TrOCR <em>per-field</em>, with a coordinate-based crop, not whole-page.</div>
+          </div>
+        </div>
+        <div class="dialog-turn">
+          <div class="dialog-avatar exp">⚡</div>
+          <div class="dialog-body">
+            <div class="dialog-name exp">Expert insight</div>
+            <div class="dialog-bubble">TrOCR is built on two pre-trained models fused together: <strong>BEiT</strong> (a 86M-parameter vision transformer trained on masked image patches) acts as the visual encoder, and <strong>RoBERTa</strong> (a 125M-parameter language model) acts as the text decoder. The cross-attention bridge lets the language model's knowledge of plausible character sequences resolve visually ambiguous ink strokes — "rn" that looks identical to "m" in handwriting gets pushed toward whichever makes a real word in context. This is the advantage of an end-to-end trained encoder-decoder over a purely visual classifier.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1960,6 +2724,30 @@ flowchart TD
       </div>
     </div>
 
+    <!-- Hybrid pipeline improvement estimate -->
+    <div class="viz reveal" style="margin-top:24px">
+      <div class="viz-title">How much does routing help? — Single parser vs hybrid pipeline</div>
+      <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:20px">Routing each document type to the best-fit tool instead of running one parser on everything is the single highest-leverage improvement. These estimates combine locally measured results (✓) with published benchmarks — your numbers will vary.</p>
+
+      <div class="h-acc-chart" id="hybridImprovChart"></div>
+
+      <div class="viz-row cols-2" style="gap:20px;margin-top:24px;align-items:start">
+        <div class="insight success" style="margin:0">
+          <strong>What routing buys you, concretely:</strong>
+          <ul style="margin-top:8px;padding-left:18px;font-size:0.85rem;line-height:1.8;color:var(--text-secondary)">
+            <li>Digital AcroForms → pypdf: <strong style="color:var(--text)">100% Field F1</strong> at 415 p/s. Any OCR tool here wastes compute and accuracy.</li>
+            <li>Scanned 300 DPI → Tesseract (raw): <strong style="color:var(--text)">~52% word accuracy</strong>. Docling (projected): ~78–85%. +26–33 pp from the right tool alone.</li>
+            <li>Handwritten fields → TrOCR per-field: <strong style="color:var(--text)">~70% on real forms</strong> vs ~20–35% with character-segmentation OCR.</li>
+            <li>Low-confidence → HITL queue: catches the 5–10% of edge cases that degrade any automated pipeline.</li>
+          </ul>
+        </div>
+        <div class="insight warn" style="margin:0">
+          <strong>The ceiling is not 100%:</strong>
+          <p style="margin-top:8px;font-size:0.85rem;line-height:1.7;color:var(--text-secondary)">Even the best hybrid pipeline hits a wall on <strong style="color:var(--text)">sub-200 DPI fax scans</strong>, <strong style="color:var(--text)">heavy coffee-stained or torn forms</strong>, and <strong style="color:var(--text)">extreme cursive handwriting</strong> from a single writer the models have never seen. The practical ceiling for fully automated extraction on real complaint form corpora is around <strong style="color:var(--text)">90–94% Field F1</strong>. The remaining 6–10% should go to Human-in-the-Loop review — cheaper than fine-tuning and more reliable than hoping the model generalises.</p>
+        </div>
+      </div>
+    </div>
+
     <div class="compare-row reveal reveal-d1">
       <div class="compare-col">
         <h4 style="color:var(--green)">✓ Must-do</h4>
@@ -2246,9 +3034,12 @@ function renderBarChart(containerId, data, _ignored, unit = '%', _scale, opts = 
     tesseract: '#f59e0b', trocr: '#06b6d4', claude: '#ef4444',
   };
 
-  // Sort ascending (smallest left → biggest right) for cost & speed
-  const sortAsc = containerId === 'costChart' || containerId === 'speedChart';
-  const sorted = sortAsc ? [...data].sort((a, b) => a.val - b.val) : data;
+  // Sort ascending (smallest→biggest) for cost & speed; descending Pareto for accuracy charts
+  const sortAsc  = containerId === 'costChart' || containerId === 'speedChart';
+  const sortDesc = containerId === 'hwChart' || containerId === 'tableAccChart';
+  const sorted = sortAsc  ? [...data].sort((a, b) => a.val - b.val)
+               : sortDesc ? [...data].sort((a, b) => b.val - a.val)
+               : data;
 
   const maxV = Math.max(...sorted.map(d => d.val));
   const minV = Math.min(...sorted.map(d => d.val));
@@ -2380,6 +3171,64 @@ function renderFieldAccChart() {
   }, 350);
 }
 
+function renderHybridImprovChart() {
+  const container = document.getElementById('hybridImprovChart');
+  if (!container) return;
+  container.innerHTML = '';
+  container.style.height = 'auto';
+
+  // Each row: label, single-tool %, routed %, source note
+  const rows = [
+    { label: 'Digital AcroForms',     single: 50, routed: 100, note: '✓ measured — pypdf Field F1' },
+    { label: 'Scanned forms (clean)', single: 52, routed: 82,  note: '✓ Tesseract raw / Docling projected' },
+    { label: 'Handwritten fields',    single: 30, routed: 70,  note: '* TrOCR per-field vs char-seg OCR' },
+    { label: 'Mixed / low-conf (HITL)', single: 70, routed: 94, note: '* with human review on <0.70 conf' },
+  ];
+
+  const BASE = 0, RANGE = 100;
+  rows.forEach(d => {
+    const sPct = ((d.single - BASE) / RANGE) * 100;
+    const rPct = ((d.routed  - BASE) / RANGE) * 100;
+    const row = document.createElement('div');
+    row.style.cssText = 'margin-bottom:16px';
+    row.innerHTML = `
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:0.78rem">
+        <span style="color:var(--text);font-weight:600">${d.label}</span>
+        <span style="color:var(--muted);font-size:0.7rem">${d.note}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:0.68rem;color:var(--muted);width:90px;flex-shrink:0;text-align:right">Single parser</span>
+          <div style="flex:1;background:var(--border);border-radius:4px;height:20px;overflow:hidden">
+            <div class="h-acc-fill" style="width:0;background:rgba(239,68,68,0.55);height:100%;display:flex;align-items:center;padding-right:8px;justify-content:flex-end;font-size:0.72rem;font-weight:700;color:#fff" data-target="${sPct}">${d.single}%</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:0.68rem;color:var(--muted);width:90px;flex-shrink:0;text-align:right">Hybrid routed</span>
+          <div style="flex:1;background:var(--border);border-radius:4px;height:20px;overflow:hidden">
+            <div class="h-acc-fill" style="width:0;background:rgba(34,197,94,0.65);height:100%;display:flex;align-items:center;padding-right:8px;justify-content:flex-end;font-size:0.72rem;font-weight:700;color:#fff" data-target="${rPct}">${d.routed}%</div>
+          </div>
+        </div>
+      </div>`;
+    container.appendChild(row);
+  });
+
+  // legend
+  const leg = document.createElement('div');
+  leg.style.cssText = 'display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:0.72rem;color:var(--muted)';
+  leg.innerHTML = `
+    <span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:8px;border-radius:3px;background:rgba(239,68,68,0.55);display:inline-block"></span>Best single parser (one tool for everything)</span>
+    <span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:8px;border-radius:3px;background:rgba(34,197,94,0.65);display:inline-block"></span>Routed hybrid pipeline</span>
+    <span>Metric: Field F1 / word accuracy. ✓ = local measurement, * = estimate from published benchmarks.</span>`;
+  container.appendChild(leg);
+
+  setTimeout(() => {
+    container.querySelectorAll('.h-acc-fill').forEach(f => {
+      f.style.width = f.dataset.target + '%';
+    });
+  }, 400);
+}
+
 function renderRubricRings() {
   const container = document.getElementById('rubricRings');
   if (!container) return;
@@ -2436,9 +3285,10 @@ function initExplainers() {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const activateStep = (demo, index) => {
-    const steps = Array.from(demo.querySelectorAll('.explain-step'));
+    const steps  = Array.from(demo.querySelectorAll('.explain-step'));
     const panels = Array.from(demo.querySelectorAll('.explain-panel'));
     const caption = demo.querySelector('.explain-caption');
+    const counter = demo.querySelector('.stepper-counter');
     const safeIndex = ((index % steps.length) + steps.length) % steps.length;
 
     steps.forEach((step, i) => {
@@ -2448,7 +3298,17 @@ function initExplainers() {
     });
     panels.forEach((panel, i) => panel.classList.toggle('is-active', i === safeIndex));
     if (caption) caption.textContent = steps[safeIndex]?.dataset.caption || '';
+    if (counter) counter.textContent = `${safeIndex + 1} / ${steps.length}`;
     demo.dataset.activeStep = String(safeIndex);
+  };
+
+  const updatePlayPauseBtn = (demo) => {
+    const btn = demo.querySelector('.stepper-play-pause');
+    if (!btn) return;
+    const playing = !!demo._stepTimer;
+    btn.textContent = playing ? '⏸' : '▶';
+    btn.title = playing ? 'Pause auto-advance' : 'Play auto-advance';
+    btn.classList.toggle('is-paused', !playing);
   };
 
   const stopDemo = (demo) => {
@@ -2456,29 +3316,69 @@ function initExplainers() {
       clearInterval(demo._stepTimer);
       demo._stepTimer = null;
     }
+    updatePlayPauseBtn(demo);
   };
 
   const startDemo = (demo) => {
-    if (reducedMotion || demo._stepTimer || demo.dataset.inview !== '1') return;
+    if (reducedMotion || demo._stepTimer || demo.dataset.inview !== '1' || demo._userPaused) return;
     const steps = demo.querySelectorAll('.explain-step');
     if (steps.length <= 1) return;
-    const intervalMs = Number(demo.dataset.interval || 2600);
+    const intervalMs = Number(demo.dataset.interval || 6000);
     demo._stepTimer = setInterval(() => {
       const current = Number(demo.dataset.activeStep || 0);
       activateStep(demo, (current + 1) % steps.length);
     }, intervalMs);
+    updatePlayPauseBtn(demo);
   };
 
   demos.forEach((demo) => {
     const steps = Array.from(demo.querySelectorAll('.explain-step'));
     activateStep(demo, 0);
+
+    // Step button clicks — pause on manual click
     steps.forEach((step, index) => {
       step.addEventListener('click', () => {
         activateStep(demo, index);
+        demo._userPaused = true;
         stopDemo(demo);
-        startDemo(demo);
       });
     });
+
+    // Prev / Next buttons
+    const prevBtn = demo.querySelector('.stepper-prev');
+    const nextBtn = demo.querySelector('.stepper-next');
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        const current = Number(demo.dataset.activeStep || 0);
+        activateStep(demo, current - 1);
+        demo._userPaused = true;
+        stopDemo(demo);
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        const current = Number(demo.dataset.activeStep || 0);
+        activateStep(demo, current + 1);
+        demo._userPaused = true;
+        stopDemo(demo);
+      });
+    }
+
+    // Play / Pause toggle
+    const playPauseBtn = demo.querySelector('.stepper-play-pause');
+    if (playPauseBtn) {
+      playPauseBtn.addEventListener('click', () => {
+        if (demo._stepTimer) {
+          // currently playing → pause
+          demo._userPaused = true;
+          stopDemo(demo);
+        } else {
+          // currently paused → play
+          demo._userPaused = false;
+          startDemo(demo);
+        }
+      });
+    }
   });
 
   if (!reducedMotion && typeof IntersectionObserver !== 'undefined') {
@@ -2519,6 +3419,7 @@ if (typeof mermaid !== 'undefined') {
 window.addEventListener('load', () => {
   initExplainers();
   renderFieldAccChart();
+  renderHybridImprovChart();
   renderBarChart('tableAccChart', TABLE_ACC_DATA, 100, '%');
   renderBarChart('speedChart', SPEED_DATA, null, ' p/s');
   renderBarChart('hwChart', HW_DATA, 100, '%');
