@@ -1408,8 +1408,8 @@
             <td class="cell-bad">✗</td>
             <td class="cell-ok">Basic</td>
             <td class="cell-bad">✗</td>
-            <td class="cell-good">~50 p/s</td>
-            <td>Digital PDFs, speed-critical paths</td>
+            <td class="cell-good">~32 p/s</td>
+            <td>Digital PDFs, rendering + coordinates</td>
           </tr>
           <tr>
             <td><strong>pdfplumber</strong></td>
@@ -1417,7 +1417,7 @@
             <td class="cell-bad">✗</td>
             <td class="cell-ok">Rule-based</td>
             <td class="cell-bad">✗</td>
-            <td class="cell-ok">~10 p/s</td>
+            <td class="cell-ok">~150 p/s</td>
             <td>Table extraction from digital PDFs</td>
           </tr>
           <tr>
@@ -1435,7 +1435,7 @@
             <td class="cell-good">✓</td>
             <td class="cell-bad">✗</td>
             <td class="cell-bad">Poor</td>
-            <td class="cell-ok">~3 p/s</td>
+            <td class="cell-ok">~1 p/s</td>
             <td>Baseline OCR, widest language support</td>
           </tr>
           <tr>
@@ -1453,7 +1453,7 @@
             <td class="cell-bad">✗</td>
             <td class="cell-bad">✗</td>
             <td class="cell-bad">✗</td>
-            <td class="cell-good">~100 p/s</td>
+            <td class="cell-good">~415 p/s</td>
             <td>AcroForm digital fields (fastest)</td>
           </tr>
           <tr style="opacity:0.7">
@@ -1468,7 +1468,7 @@
         </tbody>
       </table>
     </div>
-    <p style="font-size:0.75rem;color:var(--muted);margin-top:8px">* Procycons 2025 benchmark on sustainability reports.<span class="cite"><a href="#ref-10">[10]</a></span> Not measured on complaint forms specifically. † AGPL-3.0 is free for internal/on-prem use; commercial redistribution requires a paid Artifex license. ‡ CER on IAM clean handwriting dataset<span class="cite"><a href="#ref-7">[7]</a></span> — real-world complaint form handwriting will be higher.</p>
+    <p style="font-size:0.75rem;color:var(--muted);margin-top:8px">Speed figures are indicative CPU timings and vary strongly by document type; the detailed measured tables below are the source of truth for this benchmark. * Procycons 2025 benchmark on sustainability reports.<span class="cite"><a href="#ref-10">[10]</a></span> Not measured on complaint forms specifically. † AGPL-3.0 is free for internal/on-prem use; commercial redistribution requires a paid Artifex license. ‡ CER on IAM clean handwriting dataset<span class="cite"><a href="#ref-7">[7]</a></span> — real-world complaint form handwriting will be higher.</p>
 
     <!-- Top 3 tool cards -->
     <div class="tool-grid reveal reveal-d1">
@@ -1688,7 +1688,7 @@
               <div>
                 <div class="demo-label">Why this step can fail</div>
                 <div class="demo-output">
-                  <div class="demo-output-line"><span>With table</span><strong>Clean Unicode text</strong></div>
+                  <div class="demo-output-line"><span>With CMap</span><strong>Clean Unicode text</strong></div>
                   <div class="demo-output-line"><span>Missing table</span><strong>Garbled bytes or blanks</strong></div>
                 </div>
                 <div class="demo-note">Some PDFs use private glyph IDs (like F001 above) that map to non-standard characters. Without the CMap, the parser has no way to recover the real character.</div>
@@ -1703,15 +1703,15 @@
                 <div class="demo-output">
                   <div class="demo-output-line"><span>Y=680, X=72</span><strong>Complaint Date:</strong></div>
                   <div class="demo-output-line"><span>Y=680, X=252</span><strong>01/15/2024</strong></div>
-                  <div class="demo-output-line"><span>AcroForm /V</span><strong>Read separately from widget dict</strong></div>
+                  <div class="demo-output-line"><span>AcroForm /V</span><strong>Read via field / widget dictionaries</strong></div>
                 </div>
-                <div class="demo-note">Characters sorted by Y (top first), then X (left-to-right) reconstruct reading order. AcroForm <code>/V</code> values bypass this entirely — they're read directly from the annotation dictionary, which is why pypdf achieves 100% Field F1.</div>
+                <div class="demo-note">Characters sorted by Y (top first), then X (left-to-right) reconstruct reading order. AcroForm <code>/V</code> values bypass this entirely — they're read from the form field structure instead, which is why pypdf reaches 1.00 Field F1 on the synthetic AcroForm slice used here.</div>
               </div>
               <div>
                 <div class="demo-label">Final result</div>
                 <div class="demo-output">
                   <div class="demo-output-line"><span>Speed</span><strong>415 pages / second</strong></div>
-                  <div class="demo-output-line"><span>Field F1</span><strong>1.00 — perfect</strong></div>
+                  <div class="demo-output-line"><span>Field F1</span><strong>1.00 on this slice</strong></div>
                   <div class="demo-output-line"><span>Works on scans?</span><strong>No — needs text layer</strong></div>
                 </div>
               </div>
@@ -1758,7 +1758,7 @@ endbfchar</div>
       </div>
 
       <div class="insight warn" style="margin-top:16px">
-        <strong>Why this fails on complaint forms:</strong> scanned PDFs have <em>no content stream</em> — the page is a raster image object. Text extractors return empty string. Also, AcroForm field values live in <code>/V</code> dictionary entries, not content streams — most extractors need a separate code path for forms.
+        <strong>Why this fails on complaint forms:</strong> scanned PDFs usually have <em>no usable text layer</em> — the page content may just draw a raster image object instead of text operators. Text extractors therefore return empty string. Also, AcroForm field values live in <code>/V</code> dictionary entries, not in the visible text stream, so most extractors need a separate code path for forms.
       </div>
 
       <div class="dialog-thread">
@@ -1788,7 +1788,7 @@ endbfchar</div>
           <div class="dialog-avatar stu">🤔</div>
           <div class="dialog-body">
             <div class="dialog-name stu">Student</div>
-            <div class="dialog-bubble">That explains why pypdf shows CER = 0.49 even on a perfectly clean digital form. But its Field F1 is 1.0 — perfect. How?</div>
+            <div class="dialog-bubble">That explains why pypdf shows CER = 0.49 even on this clean synthetic digital form slice. But its Field F1 is 1.0 for field extraction. How?</div>
           </div>
         </div>
         <div class="dialog-turn">
@@ -1802,7 +1802,7 @@ endbfchar</div>
           <div class="dialog-avatar exp">⚡</div>
           <div class="dialog-body">
             <div class="dialog-name exp">Expert insight</div>
-            <div class="dialog-bubble">This is the most common trap in PDF benchmarks: <strong>never use CER or WER as the primary metric for AcroForms.</strong> CER measures whether two text strings match character-for-character in the same order — but AcroForms are structured data, not prose. The correct metric is Field F1: did you extract the right value for each named field? pypdf scores 1.0 on Field F1, meaning it extracted every form field correctly — which is what actually matters for a complaint processing pipeline.</div>
+            <div class="dialog-bubble">This is the most common trap in PDF benchmarks: <strong>do not rely on CER or WER alone for AcroForms.</strong> CER measures whether two text strings match character-for-character in the same order — but AcroForms are structured data, not prose. The key metric is Field F1: did you extract the right value for each named field? On the synthetic slice in this benchmark, pypdf scores 1.0 on Field F1, which is the outcome that matters for a complaint-processing pipeline.</div>
           </div>
         </div>
       </div>
@@ -1995,7 +1995,7 @@ endbfchar</div>
       </div>
 
       <div class="insight" style="margin-top:16px">
-        <strong>Why 300 DPI matters:</strong> a character that is 3mm tall on paper = <strong>35 px at 300 DPI</strong> vs <strong>24 px at 200 DPI</strong>. The LSTM window is fixed — at 200 DPI, ascenders and descenders merge into adjacent rows. Below 200 DPI accuracy drops off a cliff (~56% CER on complaint forms).
+        <strong>Why 300 DPI matters:</strong> a character that is 3mm tall on paper = <strong>35 px at 300 DPI</strong> vs <strong>24 px at 200 DPI</strong>. Below roughly 200-300 DPI, printed OCR often loses stroke detail and segmentation becomes less stable. The exact drop depends on the engine, document quality, and preprocessing.
       </div>
 
       <div class="dialog-thread">
@@ -2004,7 +2004,7 @@ endbfchar</div>
           <div class="dialog-avatar prof">🎓</div>
           <div class="dialog-body">
             <div class="dialog-name prof">Professor</div>
-            <div class="dialog-bubble">Let me explain <em>exactly</em> what the Tesseract LSTM sees. It receives a word-height image crop — typically 48 pixels tall in its default mode. Inside that crop, it reads left to right, predicting character probabilities at each horizontal position. If two characters overlap vertically because the image resolution is too low, the LSTM gets confused — it sees one ambiguous blob where two characters should be.</div>
+            <div class="dialog-bubble">Let me explain the rough intuition for what the Tesseract recognizer sees. It works on line or word-height image regions and reads them left to right, predicting character probabilities across the crop. If the image resolution is too low, adjacent strokes blur together and the recognizer starts seeing ambiguous blobs where distinct characters should be.</div>
           </div>
         </div>
         <div class="dialog-turn is-stu">
@@ -2039,7 +2039,7 @@ endbfchar</div>
           <div class="dialog-avatar exp">⚡</div>
           <div class="dialog-body">
             <div class="dialog-name exp">Expert insight</div>
-            <div class="dialog-bubble">The practical rule: <strong>gate preprocessing on measured image quality</strong>, not a global flag. In the code, <code>check_dpi()</code> returns the scan resolution. If DPI &lt; 200, or skew angle &gt; 1°, or contrast ratio &lt; 50 — apply the full pipeline (deskew → denoise → CLAHE → Sauvola). Otherwise, feed the raw image to Tesseract. Running the full pipeline on adequate-quality inputs makes it 4× slower with no accuracy gain — a trade-off that is never worth making.</div>
+            <div class="dialog-bubble">The practical rule: <strong>gate preprocessing on measured image quality</strong>, not a global flag. In the code, <code>check_dpi()</code> returns the scan resolution. If DPI &lt; 200, or skew angle &gt; 1°, or contrast ratio &lt; 50, applying the full pipeline (deskew → denoise → CLAHE → Sauvola) is worth trying. On already-adequate inputs, the local rerun here showed the full pipeline was slower and less accurate, so it is usually not worth applying by default.</div>
           </div>
         </div>
       </div>
@@ -2048,7 +2048,7 @@ endbfchar</div>
     <!-- ── 3.3 ML layout parsers ── -->
     <div class="viz reveal">
       <div class="viz-title">Category 3 — ML layout parsing (Docling · TableFormer)</div>
-      <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">Treats a document page as a 2-D photograph and applies <strong style="color:var(--text)">object detection</strong> to it — not byte parsing, not pixel thresholding, but vision-model inference that recognises regions and reconstructs table structure from learned patterns across 500,000 document images.</p>
+      <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">Treats a document page as a 2-D photograph and applies <strong style="color:var(--text)">object detection</strong> to it — not byte parsing, not pixel thresholding, but vision-model inference that recognises regions and reconstructs table structure from large document-image corpora.</p>
 
       <div class="explain-demo js-stepper" data-interval="6000">
         <div class="explain-head">
@@ -2098,9 +2098,9 @@ endbfchar</div>
                 <div class="demo-output">
                   <div class="demo-output-line"><span>Input</span><strong>Full page image</strong></div>
                   <div class="demo-output-line"><span>Each patch</span><strong>768-dim embedding vector</strong></div>
-                  <div class="demo-output-line"><span>Sequence length</span><strong>~1024 tokens / letter page</strong></div>
+                  <div class="demo-output-line"><span>Sequence length</span><strong>Hundreds to low-thousands of tokens</strong></div>
                 </div>
-                <div class="demo-note">This is the same operation GPT-4V and image classifiers use. The document is treated as a visual object — no text layer required, works on scans.</div>
+                <div class="demo-note">This is the same patchification idea used by modern multimodal vision models and image classifiers. The document is treated as a visual object — no text layer required, works on scans.</div>
               </div>
             </div>
           </div>
@@ -2188,9 +2188,9 @@ endbfchar</div>
                 <div class="demo-output">
                   <div class="demo-output-line"><span>Rule-based</span><strong>Find lines → infer grid</strong></div>
                   <div class="demo-output-line"><span>TableFormer</span><strong>Predict structure → fill text</strong></div>
-                  <div class="demo-output-line"><span>Training</span><strong>500K PubTabNet tables</strong></div>
+                  <div class="demo-output-line"><span>Training</span><strong>Large annotated table corpora</strong></div>
                 </div>
-                <div class="demo-note">The model has seen every possible merged-cell, spanning-header, and nested-table configuration across half a million scientific paper tables.</div>
+                <div class="demo-note">The model has seen a wide range of merged-cell, spanning-header, and nested-table configurations in large scientific-paper table datasets.</div>
               </div>
             </div>
           </div>
@@ -2245,7 +2245,7 @@ damaged on 15 January...
           <div class="dialog-avatar prof">🎓</div>
           <div class="dialog-body">
             <div class="dialog-name prof">Professor</div>
-            <div class="dialog-bubble">That works for perfectly typeset PDFs with visible borders — maybe 60% of real-world documents. Real complaint forms often have <strong>borderless tables</strong> with rows separated only by spacing. Merged cells. Headers spanning three columns. Scanned forms where the ink lines are smudged or missing. Rule-based detection fails on all of these. TableFormer predicts the structure as a <em>sequence of HTML tokens</em> — it has learned every possible table layout from 500,000 training examples.</div>
+            <div class="dialog-bubble">That works on clean, bordered tables. Real complaint forms often have <strong>borderless tables</strong> with rows separated only by spacing. Merged cells. Headers spanning three columns. Scanned forms where the ink lines are smudged or missing. Rule-based detection fails on many of these cases. TableFormer predicts the structure as a <em>sequence of HTML tokens</em>, using patterns learned from large annotated table corpora instead of only visible ruling lines.</div>
           </div>
         </div>
         <div class="dialog-turn is-stu">
@@ -2259,27 +2259,27 @@ damaged on 15 January...
           <div class="dialog-avatar prof">🎓</div>
           <div class="dialog-body">
             <div class="dialog-name prof">Professor</div>
-            <div class="dialog-bubble"><strong>Cost and speed.</strong> Docling runs a 86-million-parameter vision model on every page. On a CPU, that is roughly 0.5–2 seconds per page. Compare that to pypdf at 415 pages per second for a digital AcroForm. For a pipeline processing 10,000 forms a day, spending 1.2 seconds per page means &gt;3 hours of compute — versus seconds with a text extractor. The right tool depends on the document type.</div>
+            <div class="dialog-bubble"><strong>Cost and speed.</strong> Docling runs a vision model on every page, so CPU throughput is typically in the seconds-per-page range rather than the hundreds-of-pages-per-second range you can see from byte-level extraction on clean digital PDFs. The right tool depends on the document type: layout understanding buys robustness, but you pay for it in compute.</div>
           </div>
         </div>
         <div class="dialog-turn">
           <div class="dialog-avatar exp">⚡</div>
           <div class="dialog-body">
             <div class="dialog-name exp">Expert insight</div>
-            <div class="dialog-bubble">Docling's DiT backbone (DeiT-B architecture, 86M parameters) was pre-trained on <strong>DocBank</strong> (500K document images) and <strong>PubLayNet</strong> (360K annotated pages). This breadth is why it generalises to complaint form layouts it has never seen. TableFormer adds another ~50M parameters specifically for table structure prediction. The total pipeline — layout detection + table reconstruction + OCR fallback — costs approximately <strong>1.2 seconds per page</strong> on Apple Silicon CPU.</div>
+            <div class="dialog-bubble">Docling combines a DeiT-B-class layout backbone with a TableFormer-style structure model trained on large document and table corpora such as <strong>DocBank</strong>, <strong>PubLayNet</strong>, and <strong>PubTabNet</strong>. That breadth is why it generalises better than line-finding heuristics, but the end-to-end pipeline is still materially heavier than byte-level extraction on clean digital PDFs.</div>
           </div>
         </div>
       </div>
 
       <div class="insight" style="margin-top:4px">
-        <strong>When to choose Docling:</strong> any document that has complex tables, multi-column layouts, scanned pages, or mixed content where reading order matters. For simple digital AcroForms, Category 1 (text extraction) is 800× faster and equally accurate.
+        <strong>When to choose Docling:</strong> documents with complex tables, multi-column layouts, scanned pages, or mixed content where reading order matters. For the simple digital AcroForm slice in this benchmark, Category 1 text extraction was orders of magnitude faster and produced the same field-extraction outcome.
       </div>
     </div>
 
     <!-- ── 3.4 Handwriting ── -->
     <div class="viz reveal">
       <div class="viz-title">Category 4 — Handwriting recognition (TrOCR<span class="cite"><a href="#ref-5">[5]</a></span>)</div>
-      <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">Microsoft TrOCR is a Vision-Encoder–Language-Decoder transformer trained entirely on handwritten text images. It never uses sliding windows or character classifiers.</p>
+      <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">Microsoft TrOCR is a Vision-Encoder–Language-Decoder transformer fine-tuned for handwritten text recognition. It does not rely on an explicit character-segmentation stage or sliding-window character classifier.</p>
 
       <div class="explain-demo js-stepper" data-interval="6000">
         <div class="explain-head">
@@ -2439,26 +2439,26 @@ damaged on 15 January...
       <div class="pipeline">
         <div class="pipe-node warn">Handwritten field crop<sub>from form region</sub></div>
         <div class="pipe-arrow">→</div>
-        <div class="pipe-node active">ViT encoder<sub>16×16 px patches → CLS token</sub></div>
+        <div class="pipe-node active">ViT encoder<sub>16×16 px patches → patch embeddings</sub></div>
         <div class="pipe-arrow">→</div>
         <div class="pipe-node active">Cross-attention<sub>decoder attends to patches</sub></div>
         <div class="pipe-arrow">→</div>
         <div class="pipe-node active">Autoregressive decode<sub>token by token, beam=4</sub></div>
         <div class="pipe-arrow">→</div>
-        <div class="pipe-node">BPE token sequence<sub>→ text string</sub></div>
+        <div class="pipe-node">Text tokens<sub>→ final string</sub></div>
       </div>
 
       <div class="viz-row cols-2" style="margin-top:24px;gap:32px">
         <div class="insight success" style="margin:0">
-          <strong>What TrOCR gets right:</strong> because it reads a field as a whole image (not character by character), connected script and ligatures that break character classifiers are handled naturally. CER ~2.9% on clean IAM handwriting.<span class="cite"><a href="#ref-7">[7]</a></span>
+          <strong>What TrOCR gets right:</strong> because it reads a field as a whole image rather than requiring an explicit character split, connected script and ligatures that break character classifiers are handled more naturally. The public large handwritten model reports CER ~2.9% on the clean IAM benchmark.<span class="cite"><a href="#ref-7">[7]</a></span>
         </div>
         <div class="insight warn" style="margin:0">
-          <strong>What TrOCR gets wrong:</strong> real complaint forms have noisy, degraded, variable-size handwriting. CER degrades to 30–60% on real-world inputs. The model was trained on curated single-writer samples. Use it per-field, not whole-page.
+          <strong>What TrOCR gets wrong:</strong> real complaint forms have noisy, degraded, variable-size handwriting. Performance can drop sharply on messy real-world inputs because the public benchmark number comes from cleaner line images. Use it per-field, not whole-page, and measure it on your own handwriting corpus.
         </div>
       </div>
 
       <div class="dialog-thread">
-        <div class="dialog-thread-title">Lecture — why TrOCR never needs to find character boundaries</div>
+        <div class="dialog-thread-title">Lecture — why TrOCR does not rely on explicit character boundaries</div>
         <div class="dialog-turn">
           <div class="dialog-avatar prof">🎓</div>
           <div class="dialog-body">
@@ -2477,7 +2477,7 @@ damaged on 15 January...
           <div class="dialog-avatar prof">🎓</div>
           <div class="dialog-body">
             <div class="dialog-name prof">Professor</div>
-            <div class="dialog-bubble"><strong>It doesn't happen — that's the elegant part.</strong> TrOCR takes the entire field image as input and asks a language decoder: "given all these visual patches, what is the most likely Unicode character sequence?" At each decoding step, <em>cross-attention</em> focuses on whichever patches contain the ink relevant to the current character. For the letter 'J', the decoder attends to the top-left patches where the vertical descending stroke lives. For 'o', it attends to the curved-loop patches. Segmentation is implicit in the attention weights — never explicitly computed.</div>
+            <div class="dialog-bubble"><strong>It does not happen as a separate preprocessing stage.</strong> TrOCR takes the entire field image as input and asks a language decoder: "given all these visual patches, what is the most likely Unicode character sequence?" At each decoding step, <em>cross-attention</em> focuses on whichever patches contain the ink relevant to the current character. For the letter 'J', the decoder attends to the top-left patches where the vertical descending stroke lives. For 'o', it attends to the curved-loop patches. Segmentation is implicit in the attention weights rather than computed by a standalone character splitter.</div>
           </div>
         </div>
         <div class="dialog-turn is-stu">
@@ -2491,7 +2491,7 @@ damaged on 15 January...
           <div class="dialog-avatar prof">🎓</div>
           <div class="dialog-body">
             <div class="dialog-name prof">Professor</div>
-            <div class="dialog-bubble">Precisely — and that is exactly why CER is 2.9% on clean IAM handwriting. Traditional character-segmentation OCR breaks badly on connected script. TrOCR handles it naturally. <strong>The limitation is training data</strong>: the model learned from curated, single-writer samples. Real complaint forms have degraded ink, mixed print and handwriting, and variable letter forms from hundreds of different writers. CER degrades to 30–60% on these — which is why we run TrOCR <em>per-field</em>, with a coordinate-based crop, not whole-page.</div>
+            <div class="dialog-bubble">That is the core reason TrOCR performs so well on clean IAM handwriting. Traditional character-segmentation OCR breaks badly on connected script, while TrOCR handles it more naturally. <strong>The limitation is training data</strong>: the public model was evaluated on cleaner, curated line images. Real complaint forms have degraded ink, mixed print and handwriting, and much more writer variation, which is why we run TrOCR <em>per-field</em>, with a coordinate-based crop, not whole-page.</div>
           </div>
         </div>
         <div class="dialog-turn">
@@ -2585,7 +2585,7 @@ damaged on 15 January...
     <div class="viz reveal reveal-d1">
       <div class="viz-title">Handwriting Recognition — On Documents with Handwritten Notes</div>
       <div class="chart-bars" id="hwChart"></div>
-      <p style="font-size:0.75rem;color:var(--muted);margin-top:12px">Source: Braincuber 2025 independent benchmark.<span class="cite"><a href="#ref-13">[13]</a></span> All numbers represent accuracy on documents containing handwritten annotations — not pure handwriting datasets. TrOCR CER from IAM Handwriting Database<span class="cite"><a href="#ref-7">[7]</a></span> (clean).</p>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:12px">Source: Braincuber 2025 independent benchmark.<span class="cite"><a href="#ref-13">[13]</a></span> This chart mixes two kinds of evidence: cloud OCR numbers from document benchmarks with handwritten annotations, and a clean-reference TrOCR score from the IAM handwriting dataset.<span class="cite"><a href="#ref-7">[7]</a></span> Treat it as directional, not apples-to-apples.</p>
     </div>
 
     <!-- Preprocessing impact -->
@@ -2755,25 +2755,26 @@ flowchart TD
     E -->|YES| F["✅ pypdf.get_fields\nBest current measured fit\non synthetic AcroForms"]
     E -->|NO| G{Complex tables\nor multi-column layout?}
     G -->|YES| H["✅ Docling\nStrong layout + table handling"]
-    G -->|NO| I["✅ PyMuPDF\nFastest plain text"]
+    G -->|NO| I["✅ PyMuPDF\nFast plain text + geometry"]
     D -->|NO — Scanned PDF| J{🔍 Scan quality?}
     J -->|Less than 200 DPI| K["❌ Reject\nor request rescan"]
     J -->|Low DPI or visibly degraded| L["If you preprocess:\ndeskew → denoise → CLAHE → Sauvola"]
     J -->|Already readable 300 DPI| M["Usually skip heavy binarization\nor keep cleanup light"]
     L --> N{✍️ Handwritten fields present?}
     M --> N
-    N -->|YES| O{Volume over\n500K pages/month?}
+    N -->|YES| O{High monthly volume\nor strict local control?}
     O -->|YES| P["✅ Docling + TrOCR\nSelf-hosted pipeline"]
     O -->|NO| Q{Cloud OK?}
     Q -->|YES| R["☁️ AWS Textract Forms API\n$0.065 per page"]
     Q -->|NO| P
-    N -->|NO — Printed text only| S{Volume over\n26K forms/month?}
-    S -->|YES| P
-    S -->|NO| T["☁️ Azure Document Intelligence\n$0.030 per page"]
+    N -->|NO — Printed text only| S{High monthly volume\nor lowest unit cost?}
+    S -->|YES| U["✅ Self-hosted OCR/layout\nDocling or Tesseract path"]
+    S -->|NO| T["☁️ Google Document AI\n$0.030 per page"]
     style F fill:#1a3a1a,stroke:#22c55e,color:#22c55e
     style H fill:#1a2a3a,stroke:#3b82f6,color:#3b82f6
     style I fill:#1a2a3a,stroke:#3b82f6,color:#3b82f6
     style P fill:#1a2a3a,stroke:#3b82f6,color:#3b82f6
+    style U fill:#1a2a3a,stroke:#3b82f6,color:#3b82f6
     style K fill:#3a1a1a,stroke:#ef4444,color:#ef4444
     style R fill:#2a1a3a,stroke:#a855f7,color:#a855f7
     style T fill:#2a1a3a,stroke:#a855f7,color:#a855f7
@@ -2814,8 +2815,8 @@ flowchart TD
 
     <!-- Hybrid pipeline improvement estimate -->
     <div class="viz reveal" style="margin-top:24px">
-      <div class="viz-title">How much does routing help? — Single parser vs hybrid pipeline</div>
-      <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:20px">Routing each document type to the best-fit tool instead of running one parser on everything is the single highest-leverage improvement. These estimates combine locally measured results (✓) with published benchmarks — your numbers will vary.</p>
+      <div class="viz-title">Illustrative Routing Benefit — Single parser vs hybrid pipeline</div>
+      <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:20px">Routing each document type to the best-fit tool instead of running one parser on everything is often the highest-leverage improvement. The chart below is an illustrative scenario that mixes local measurements (✓), published benchmarks, and operational assumptions — your numbers will vary.</p>
 
       <div class="h-acc-chart" id="hybridImprovChart"></div>
 
@@ -2823,15 +2824,15 @@ flowchart TD
         <div class="insight success" style="margin:0">
           <strong>What routing buys you, concretely:</strong>
           <ul style="margin-top:8px;padding-left:18px;font-size:0.85rem;line-height:1.8;color:var(--text-secondary)">
-            <li>Digital AcroForms → pypdf: <strong style="color:var(--text)">100% Field F1</strong> at 415 p/s. Any OCR tool here wastes compute and accuracy.</li>
-            <li>Scanned 300 DPI → Tesseract (raw): <strong style="color:var(--text)">~52% word accuracy</strong>. Docling (projected): ~78–85%. +26–33 pp from the right tool alone.</li>
-            <li>Handwritten fields → TrOCR per-field: <strong style="color:var(--text)">~70% on real forms</strong> vs ~20–35% with character-segmentation OCR.</li>
+            <li>Digital AcroForms → pypdf: <strong style="color:var(--text)">1.00 Field F1 on the synthetic slice</strong> at 415 p/s. OCR on that path mostly wastes compute.</li>
+            <li>Scanned 300 DPI → a routed OCR/layout path can materially outperform a single default parser, especially when tables or mixed layout matter.</li>
+            <li>Handwritten fields → per-field HTR is usually a better fit than whole-page OCR, but the exact gain depends heavily on your handwriting corpus.</li>
             <li>Low-confidence → HITL queue: catches the 5–10% of edge cases that degrade any automated pipeline.</li>
           </ul>
         </div>
         <div class="insight warn" style="margin:0">
           <strong>The ceiling is not 100%:</strong>
-          <p style="margin-top:8px;font-size:0.85rem;line-height:1.7;color:var(--text-secondary)">Even the best hybrid pipeline hits a wall on <strong style="color:var(--text)">sub-200 DPI fax scans</strong>, <strong style="color:var(--text)">heavy coffee-stained or torn forms</strong>, and <strong style="color:var(--text)">extreme cursive handwriting</strong> from a single writer the models have never seen. The practical ceiling for fully automated extraction on real complaint form corpora is around <strong style="color:var(--text)">90–94% Field F1</strong>. The remaining 6–10% should go to Human-in-the-Loop review — cheaper than fine-tuning and more reliable than hoping the model generalises.</p>
+          <p style="margin-top:8px;font-size:0.85rem;line-height:1.7;color:var(--text-secondary)">Even a strong hybrid pipeline hits a wall on <strong style="color:var(--text)">sub-200 DPI fax scans</strong>, <strong style="color:var(--text)">heavy coffee-stained or torn forms</strong>, and <strong style="color:var(--text)">extreme cursive handwriting</strong>. In practice, many teams still reserve the last 5–10% of uncertain cases for Human-in-the-Loop review rather than promise full automation.</p>
         </div>
       </div>
     </div>
@@ -2881,7 +2882,7 @@ flowchart TD
       <div class="viz-title">Monthly Cost Estimate — Structured Extraction (1 form ≈ 3 pages)</div>
       <div class="chart-bars" id="costChart" style="height:220px"></div>
       <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap" id="costLegend"></div>
-      <p style="font-size:0.75rem;color:var(--muted);margin-top:12px">Break-even: Docling self-hosted vs Azure/Google ≈ 167K forms/month; vs AWS Textract Forms ≈ 26K forms/month. Source: Published pricing pages (April 2026). Prices change — verify before budgeting.</p>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:12px">Illustrative break-even under the self-hosted cost assumptions in this chart: vs Google Document AI Form Parser ≈ 167K forms/month; vs AWS Textract Forms+Tables ≈ 26K forms/month. Source: vendor pricing pages checked April 2026. Prices and volume discounts change — reprice before budgeting.</p>
     </div>
 
     <div class="insight success">
@@ -2889,7 +2890,7 @@ flowchart TD
     </div>
 
     <div class="insight warn">
-      <strong>Before you start:</strong> Annotate 200 real forms (ground truth JSON), run the ablation in <code>sandbox/evaluate.py</code>, measure your actual CER/WER/FER, and calibrate your confidence thresholds empirically. All the numbers on this page are starting points derived from published research — not measurements on your complaint forms.
+      <strong>Before you start:</strong> Annotate 200 real forms (ground truth JSON), run the ablation in <code>sandbox/evaluate.py</code>, measure your actual CER/WER/FER, and calibrate your confidence thresholds empirically. The numbers on this page are starting points, whether they come from local proxy measurements or published research — not measurements on your complaint forms.
     </div>
   </div>
 </section>
@@ -3107,8 +3108,8 @@ const HW_DATA = [
 const COST_DATA = [
   { name: 'Docling (10K)', val: 0.2, cls: 'docling' },
   { name: 'Docling (100K)', val: 0.8, cls: 'docling' },
-  { name: 'Azure DI (10K)', val: 0.9, cls: 'pymupdf' },
-  { name: 'Azure DI (100K)', val: 9, cls: 'pymupdf' },
+  { name: 'Google DAI (10K)', val: 0.9, cls: 'pymupdf' },
+  { name: 'Google DAI (100K)', val: 9, cls: 'pymupdf' },
   { name: 'AWS Textract (10K)', val: 1.95, cls: 'tesseract' },
   { name: 'AWS Textract (100K)', val: 19.5, cls: 'tesseract' },
 ];
@@ -3268,9 +3269,9 @@ function renderHybridImprovChart() {
   // Each row: label, single-tool %, routed %, source note
   const rows = [
     { label: 'Digital AcroForms',     single: 50, routed: 100, note: '✓ measured — pypdf Field F1' },
-    { label: 'Scanned forms (clean)', single: 52, routed: 82,  note: '✓ Tesseract raw / Docling projected' },
-    { label: 'Handwritten fields',    single: 30, routed: 70,  note: '* TrOCR per-field vs char-seg OCR' },
-    { label: 'Mixed / low-conf (HITL)', single: 70, routed: 94, note: '* with human review on <0.70 conf' },
+    { label: 'Scanned forms (clean)', single: 52, routed: 82,  note: 'illustrative — local Tesseract + published layout references' },
+    { label: 'Handwritten fields',    single: 30, routed: 70,  note: 'illustrative — field-level HTR usually beats generic OCR' },
+    { label: 'Mixed / low-conf (HITL)', single: 70, routed: 94, note: 'illustrative ops target with human review' },
   ];
 
   const BASE = 0, RANGE = 100;
