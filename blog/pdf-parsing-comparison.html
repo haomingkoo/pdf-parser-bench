@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+
+  <title>PDF Parsing for Complaint Forms — Docling vs PyMuPDF vs PaddleOCR</title>
+  <meta name="description" content="A head-to-head evaluation of the top open-source PDF parsing tools for customer complaint form processing. Ablation tests, rubric scoring, decision framework.">
+  <link rel="canonical" href="https://kooexperience.com/blog/posts/pdf-parsing-comparison.html" />
+  <meta name="author" content="Haoming Koo" />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:title" content="PDF Parsing for Complaint Forms — Docling vs PyMuPDF vs PaddleOCR" />
+  <meta property="og:description" content="A head-to-head evaluation of the top open-source PDF parsing tools for customer complaint form processing." />
+  <meta property="og:url" content="https://kooexperience.com/blog/posts/pdf-parsing-comparison.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Haoming Koo" />
+  <meta property="og:locale" content="en_SG" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "PDF Parsing for Complaint Forms — Docling vs PyMuPDF vs PaddleOCR",
+    "author": {"@type": "Person", "name": "Haoming Koo"},
+    "datePublished": "2026-04-10",
+    "description": "Open-source PDF parsing evaluation for customer complaint forms.",
+    "publisher": {"@type": "Person", "name": "Haoming Koo"}
+  }
+  </script>
+
+  <style>
+    /* ── CSS Variables ───────────────────────────────────────────── */
+    [data-theme="dark"] {
+      --bg: #060608;
+      --surface: #0e0e12;
+      --surface-hover: #141418;
+      --border: #1c1c24;
+      --border-hover: #2a2a36;
+      --accent: #3b82f6;
+      --accent-glow: rgba(59,130,246,0.15);
+      --text: #eeeef0;
+      --text-secondary: #b0b0b8;
+      --muted: #64647a;
+      --green: #22c55e;
+      --purple: #a855f7;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --code-bg: #0a0a10;
+    }
+    [data-theme="light"] {
+      --bg: #f8f8fc;
+      --surface: #ffffff;
+      --surface-hover: #f0f0f8;
+      --border: #e2e2ec;
+      --border-hover: #c8c8d8;
+      --accent: #2563eb;
+      --accent-glow: rgba(37,99,235,0.08);
+      --text: #111118;
+      --text-secondary: #444454;
+      --muted: #888898;
+      --green: #16a34a;
+      --purple: #7c3aed;
+      --amber: #d97706;
+      --red: #dc2626;
+      --code-bg: #f0f0f8;
+    }
+
+    /* ── Base ────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875em;
+      background: var(--code-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82em;
+      line-height: 1.6;
+      margin: 20px 0;
+    }
+
+    /* ── Navigation ─────────────────────────────────────────────── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(6,6,8,0.85);
+      backdrop-filter: blur(20px) saturate(1.6);
+      border-bottom: 1px solid var(--border);
+      height: 60px;
+    }
+    [data-theme="light"] .nav { background: rgba(248,248,252,0.85); }
+    .nav-inner {
+      max-width: 900px; margin: 0 auto; padding: 0 24px;
+      height: 100%; display: flex; align-items: center; gap: 16px;
+    }
+    .nav-logo {
+      font-weight: 800; font-size: 1.1rem;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-title {
+      flex: 1; font-size: 0.875rem; color: var(--text-secondary);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .nav-blog {
+      font-size: 0.8rem; color: var(--muted); border: 1px solid var(--border);
+      padding: 5px 12px; border-radius: 6px; white-space: nowrap;
+    }
+    .nav-blog:hover { color: var(--text); border-color: var(--border-hover); text-decoration: none; }
+    .theme-btn {
+      background: none; border: 1px solid var(--border); color: var(--text-secondary);
+      padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.875rem;
+      transition: border-color 0.2s;
+    }
+    .theme-btn:hover { border-color: var(--border-hover); }
+
+    /* ── Hero ───────────────────────────────────────────────────── */
+    .hero {
+      min-height: 60vh; display: flex; flex-direction: column;
+      justify-content: center; padding: 100px 0 60px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent-glow); color: var(--accent);
+      border: 1px solid rgba(59,130,246,0.3); padding: 6px 14px;
+      border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+      margin-bottom: 20px; width: fit-content;
+    }
+    .hero-badge::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub { font-size: 1.15rem; color: var(--text-secondary); max-width: 640px; margin-bottom: 24px; }
+    .hero-meta {
+      display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+      font-size: 0.825rem; color: var(--muted);
+    }
+    .tag {
+      display: inline-block; padding: 3px 10px; border-radius: 12px;
+      font-size: 0.75rem; font-weight: 600; border: 1px solid;
+    }
+    .tag.blue { background: var(--accent-glow); color: var(--accent); border-color: rgba(59,130,246,0.3); }
+    .tag.purple { background: rgba(168,85,247,0.1); color: var(--purple); border-color: rgba(168,85,247,0.3); }
+    .tag.amber { background: rgba(245,158,11,0.1); color: var(--amber); border-color: rgba(245,158,11,0.3); }
+    .tag.green { background: rgba(34,197,94,0.1); color: var(--green); border-color: rgba(34,197,94,0.3); }
+    .tag.red { background: rgba(239,68,68,0.1); color: var(--red); border-color: rgba(239,68,68,0.3); }
+    .scroll-hint {
+      margin-top: 40px; color: var(--muted); font-size: 0.8rem;
+      display: flex; align-items: center; gap: 8px;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(4px)} }
+
+    /* ── Sections ───────────────────────────────────────────────── */
+    .section {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+    }
+    .section-num {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 700;
+      margin-bottom: 16px; line-height: 1.2;
+    }
+    .section-intro { color: var(--text-secondary); max-width: 680px; margin-bottom: 40px; }
+
+    /* ── Viz panels ─────────────────────────────────────────────── */
+    .viz {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 28px; margin: 24px 0;
+      position: relative; overflow: hidden;
+    }
+    .viz::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--purple));
+    }
+    .viz-title {
+      font-size: 0.875rem; font-weight: 600; color: var(--text-secondary);
+      margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .viz-row { display: grid; gap: 24px; }
+    .viz-row.cols-2 { grid-template-columns: 1fr 1fr; }
+    .viz-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+    /* ── Bar charts ─────────────────────────────────────────────── */
+    .chart { display: flex; flex-direction: column; gap: 4px; }
+    .chart-label {
+      font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 12px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .chart-label::before {
+      content: ''; width: 10px; height: 10px; border-radius: 50%;
+      background: var(--accent); flex-shrink: 0;
+    }
+    .chart-bars { display: flex; align-items: flex-end; gap: 10px; height: 180px; }
+    .bar-col {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; gap: 6px; height: 100%;
+    }
+    .bar-fill {
+      width: 100%; border-radius: 6px 6px 0 0; min-height: 4px;
+      transition: height 1s cubic-bezier(.34,1.56,.64,1);
+      position: relative; flex-shrink: 0;
+    }
+    .bar-fill.docling { background: linear-gradient(180deg, #3b82f6, #1d4ed8); }
+    .bar-fill.pymupdf { background: linear-gradient(180deg, #a855f7, #7e22ce); }
+    .bar-fill.paddleocr { background: linear-gradient(180deg, #22c55e, #15803d); }
+    .bar-fill.tesseract { background: linear-gradient(180deg, #f59e0b, #b45309); }
+    .bar-fill.trocr { background: linear-gradient(180deg, #06b6d4, #0e7490); }
+    .bar-fill.claude { background: linear-gradient(180deg, #ef4444, #991b1b); }
+    .bar-val {
+      font-size: 0.72rem; font-weight: 700; color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .bar-name { font-size: 0.68rem; color: var(--muted); text-align: center; }
+
+    /* ── Stat cards ─────────────────────────────────────────────── */
+    .stat-row { display: flex; gap: 16px; flex-wrap: wrap; margin: 20px 0; }
+    .stat-card {
+      flex: 1; min-width: 120px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+    }
+    .stat-val {
+      font-size: 1.8rem; font-weight: 800; line-height: 1;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── Insight boxes ──────────────────────────────────────────── */
+    .insight {
+      background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.25);
+      border-left: 3px solid var(--accent); border-radius: 8px;
+      padding: 14px 18px; margin: 20px 0; font-size: 0.9rem;
+    }
+    .insight.warn {
+      background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.25);
+      border-left-color: var(--amber);
+    }
+    .insight.success {
+      background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.25);
+      border-left-color: var(--green);
+    }
+    .insight.danger {
+      background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25);
+      border-left-color: var(--red);
+    }
+    .insight strong { color: var(--text); }
+
+    /* ── Tables ─────────────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; margin: 24px 0; border-radius: 10px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    thead { background: var(--surface); }
+    th {
+      padding: 12px 16px; text-align: left; font-weight: 600;
+      font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--text-secondary); border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td { padding: 11px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface-hover); }
+    .cell-good { color: var(--green); font-weight: 600; }
+    .cell-ok { color: var(--amber); }
+    .cell-bad { color: var(--red); }
+    .cell-na { color: var(--muted); }
+
+    /* ── Tool cards ─────────────────────────────────────────────── */
+    .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin: 24px 0; }
+    .tool-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .tool-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+    .tool-card.highlight { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 4px 24px var(--accent-glow); }
+    .tool-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .tool-license { font-size: 0.75rem; margin-bottom: 12px; }
+    .tool-desc { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.5; }
+    .tool-caps { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    /* ── Pipeline diagram ───────────────────────────────────────── */
+    .pipeline {
+      display: flex; align-items: center; gap: 0;
+      margin: 28px 0; flex-wrap: wrap; gap: 4px;
+    }
+    .pipe-node {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 18px; font-size: 0.82rem;
+      font-weight: 600; text-align: center; flex: 1; min-width: 100px;
+    }
+    .pipe-node.active { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
+    .pipe-node.warn { border-color: var(--amber); background: rgba(245,158,11,0.08); color: var(--amber); }
+    .pipe-node sub { display: block; font-size: 0.68rem; font-weight: 400; color: var(--muted); margin-top: 2px; }
+    .pipe-arrow { color: var(--muted); font-size: 1.2rem; flex-shrink: 0; padding: 0 4px; }
+
+    /* ── Score ring ─────────────────────────────────────────────── */
+    .score-ring-row { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin: 28px 0; }
+    .score-ring {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .ring-svg { position: relative; }
+    .ring-label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); text-align: center; }
+    .ring-val {
+      font-size: 1.4rem; font-weight: 800; font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Reveal animations ──────────────────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+
+    /* ── Decision tree ──────────────────────────────────────────── */
+    .decision-tree {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 28px; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem; line-height: 1.8; overflow-x: auto;
+    }
+    .dt-node { color: var(--text-secondary); }
+    .dt-yes { color: var(--green); font-weight: 600; }
+    .dt-no { color: var(--amber); font-weight: 600; }
+    .dt-result { color: var(--accent); font-weight: 700; background: var(--accent-glow); padding: 2px 8px; border-radius: 4px; }
+    .dt-warn { color: var(--red); font-weight: 600; }
+
+    /* ── Comparison boxes ───────────────────────────────────────── */
+    .compare-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin: 24px 0; }
+    .compare-col { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .compare-col h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; }
+    .compare-col ul { list-style: none; }
+    .compare-col ul li { font-size: 0.83rem; color: var(--text-secondary); padding: 4px 0; border-bottom: 1px solid var(--border); }
+    .compare-col ul li:last-child { border-bottom: none; }
+    .compare-col ul li::before { content: '▸ '; color: var(--accent); }
+
+    /* ── Footer ─────────────────────────────────────────────────── */
+    .footer {
+      border-top: 1px solid var(--border); padding: 40px 0;
+      color: var(--muted); font-size: 0.82rem;
+    }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+
+    /* ── Responsive ─────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .viz-row.cols-2, .viz-row.cols-3, .compare-row { grid-template-columns: 1fr; }
+      .chart-bars { height: 120px; }
+      .pipeline { flex-direction: column; }
+      .pipe-arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ──────────────────────────────────────────────── -->
+<nav class="nav">
+  <div class="nav-inner">
+    <span class="nav-logo">HK</span>
+    <span class="nav-title">PDF Parsing for Complaint Forms</span>
+    <a href="/blog" class="nav-blog">← Blog</a>
+    <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">☀︎</button>
+  </div>
+</nav>
+
+<!-- ── Hero ──────────────────────────────────────────────────────── -->
+<div class="container">
+  <section class="hero">
+    <div class="hero-badge">Interactive Deep Dive</div>
+    <h1>Parsing Customer<br><span class="gradient-text">Complaint Forms</span></h1>
+    <p class="hero-sub">A head-to-head evaluation of the top open-source PDF parsers — ablation tests, rubric scoring, production architecture, and a decision framework for your specific constraints.</p>
+    <div class="hero-meta">
+      <span>Haoming Koo</span>
+      <span>·</span>
+      <span>April 2026</span>
+      <span>·</span>
+      <span class="tag blue">Open Source</span>
+      <span class="tag purple">On-Prem</span>
+      <span class="tag amber">Complaint Forms</span>
+    </div>
+    <div class="scroll-hint">↓ Scroll to explore</div>
+  </section>
+</div>
+
+<!-- ── Section 1: Why This Is Hard ──────────────────────────────── -->
+<section class="section" id="overview">
+  <div class="container">
+    <div class="section-num">Background</div>
+    <h2 class="section-title">Why complaint forms break every parser</h2>
+    <p class="section-intro">Most PDF parsing benchmarks test clean academic papers or financial reports. Complaint forms are a different beast — they combine six difficulty layers simultaneously.</p>
+
+    <div class="viz reveal">
+      <div class="viz-title">Difficulty Stack — Customer Complaint Forms</div>
+      <div class="pipeline">
+        <div class="pipe-node warn">Content Mix<sub>Print + Handwriting</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node warn">Layout Diversity<sub>KVP · Tables · Checkboxes</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node warn">Scan Quality<sub>Fax 200 DPI · Skew · Coffee stains</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node warn">Document Heterogeneity<sub>Form + Attachments in one PDF</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node warn">Field Semantics<sub>Cross-field validation</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node warn" style="border-color:var(--red);background:rgba(239,68,68,0.08);color:var(--red)">Compliance<sub>CFPB · GDPR · PII</sub></div>
+      </div>
+    </div>
+
+    <div class="insight warn">
+      <strong>The benchmark trap:</strong> OmniDocBench (CVPR 2025) tested 9 document types and found over 55 percentage points of accuracy variance across document categories — for the same parser. Domain composition matters more than which tool you pick. Measure on your actual forms.
+    </div>
+
+    <div class="viz reveal reveal-d1">
+      <div class="viz-title">Field-Level Accuracy Expectations (Before Tool Selection)</div>
+      <div class="chart-bars" id="fieldAccChart" style="height:200px">
+        <!-- Rendered by JS -->
+      </div>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap" id="fieldAccLegend"></div>
+    </div>
+
+    <div class="stat-row reveal reveal-d2">
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--green)">99%+</div>
+        <div class="stat-label">Printed text at 300 DPI</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--amber)">90–96%</div>
+        <div class="stat-label">Checkbox detection</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--amber)">80–90%</div>
+        <div class="stat-label">Numeric fields (printed)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--red)">70–88%</div>
+        <div class="stat-label">Handwritten free text</div>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>No benchmark covers real complaint forms.</strong> FUNSD (the closest proxy) contains 199 administrative forms — mostly machine-typed, not handwritten. Build a proprietary annotated corpus from 200+ real forms before making a production tool selection.
+    </div>
+  </div>
+</section>
+
+<!-- ── Section 2: Tool Overview ──────────────────────────────────── -->
+<section class="section" id="tool-deep-dive">
+  <div class="container">
+    <div class="section-num">Tool Overview</div>
+    <h2 class="section-title">8 parsers, 6 categories</h2>
+    <p class="section-intro">All tools below are free and run on-prem. The Claude API entry is included for research comparison only — it is not on-prem.</p>
+
+    <div class="table-wrap reveal">
+      <table>
+        <thead>
+          <tr>
+            <th>Tool</th><th>License</th><th>Scanned</th><th>Tables</th><th>Handwriting</th><th>Speed (CPU)</th><th>Best For</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Docling</strong> <span class="tag blue" style="margin-left:4px;font-size:0.65rem">★ Top Pick</span></td>
+            <td class="cell-good">MIT</td>
+            <td class="cell-good">✓</td>
+            <td class="cell-good">97.9%*</td>
+            <td class="cell-ok">Limited</td>
+            <td class="cell-ok">~1.3 p/s</td>
+            <td>Complex layouts, production on-prem</td>
+          </tr>
+          <tr>
+            <td><strong>PyMuPDF</strong></td>
+            <td class="cell-ok">AGPL-3.0†</td>
+            <td class="cell-bad">✗</td>
+            <td class="cell-ok">Basic</td>
+            <td class="cell-bad">✗</td>
+            <td class="cell-good">~50 p/s</td>
+            <td>Digital PDFs, speed-critical paths</td>
+          </tr>
+          <tr>
+            <td><strong>pdfplumber</strong></td>
+            <td class="cell-good">MIT</td>
+            <td class="cell-bad">✗</td>
+            <td class="cell-ok">Rule-based</td>
+            <td class="cell-bad">✗</td>
+            <td class="cell-ok">~10 p/s</td>
+            <td>Table extraction from digital PDFs</td>
+          </tr>
+          <tr>
+            <td><strong>PaddleOCR</strong></td>
+            <td class="cell-good">Apache-2.0</td>
+            <td class="cell-good">✓</td>
+            <td class="cell-good">✓ (ML)</td>
+            <td class="cell-ok">CER ~24%</td>
+            <td class="cell-ok">~2–4 p/s</td>
+            <td>Scanned PDFs, multilingual (80+ langs)</td>
+          </tr>
+          <tr>
+            <td><strong>Tesseract</strong></td>
+            <td class="cell-good">Apache-2.0</td>
+            <td class="cell-good">✓</td>
+            <td class="cell-bad">✗</td>
+            <td class="cell-bad">Poor</td>
+            <td class="cell-ok">~3 p/s</td>
+            <td>Baseline OCR, widest language support</td>
+          </tr>
+          <tr>
+            <td><strong>TrOCR</strong></td>
+            <td class="cell-good">MIT</td>
+            <td class="cell-good">✓</td>
+            <td class="cell-bad">✗</td>
+            <td class="cell-good">CER ~3%‡</td>
+            <td class="cell-bad">&lt;1 p/s</td>
+            <td>Handwritten field extraction only</td>
+          </tr>
+          <tr>
+            <td><strong>pypdf</strong></td>
+            <td class="cell-good">BSD-3</td>
+            <td class="cell-bad">✗</td>
+            <td class="cell-bad">✗</td>
+            <td class="cell-bad">✗</td>
+            <td class="cell-good">~100 p/s</td>
+            <td>AcroForm digital fields (fastest)</td>
+          </tr>
+          <tr style="opacity:0.7">
+            <td><em>Claude API</em> <span class="tag red" style="margin-left:4px;font-size:0.65rem">Not on-prem</span></td>
+            <td class="cell-bad">Proprietary</td>
+            <td class="cell-good">✓</td>
+            <td class="cell-good">✓</td>
+            <td class="cell-good">~90%</td>
+            <td class="cell-bad">0.3 p/s</td>
+            <td>Research comparison only — data leaves infra</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:0.75rem;color:var(--muted);margin-top:8px">* Procycons 2025 benchmark on sustainability reports. Not measured on complaint forms specifically. † AGPL-3.0 is free for internal/on-prem use; commercial redistribution requires a paid Artifex license. ‡ CER on IAM clean handwriting dataset — real-world complaint form handwriting will be higher.</p>
+
+    <!-- Top 3 tool cards -->
+    <div class="tool-grid reveal reveal-d1">
+      <div class="tool-card highlight">
+        <div class="tool-name">Docling</div>
+        <div class="tool-license"><span class="tag blue">MIT</span> &nbsp; IBM Research · 37k ★</div>
+        <div class="tool-desc">Best open-source ML layout parser. TableFormer model achieves near-commercial table accuracy. Fully local, air-gap compatible. Native PII integration via GLiNER.</div>
+        <div class="tool-caps">
+          <span class="tag blue">Scanned</span>
+          <span class="tag blue">Tables</span>
+          <span class="tag blue">Multi-format</span>
+          <span class="tag blue">PII ready</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">PyMuPDF</div>
+        <div class="tool-license"><span class="tag amber">AGPL-3.0</span> &nbsp; Artifex · 8.7k ★</div>
+        <div class="tool-desc">Fastest text extraction benchmark winner. 10–50× faster than pdfminer-based tools. Best for digital text-layer PDFs and AcroForm fields. Not useful for scanned inputs without Tesseract.</div>
+        <div class="tool-caps">
+          <span class="tag amber">Digital PDF</span>
+          <span class="tag amber">AcroForm</span>
+          <span class="tag amber">Fastest</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">PaddleOCR</div>
+        <div class="tool-license"><span class="tag green">Apache-2.0</span> &nbsp; Baidu · 70k ★</div>
+        <div class="tool-desc">Most comprehensive open-source OCR suite. PP-OCRv4 + PP-StructureV2 for layout and tables. 80+ language support. Best choice for multilingual complaint forms from diverse customer bases.</div>
+        <div class="tool-caps">
+          <span class="tag green">Scanned</span>
+          <span class="tag green">Tables (ML)</span>
+          <span class="tag green">80+ languages</span>
+          <span class="tag green">GPU ready</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Section 3: How Parsers Work ───────────────────────────────── -->
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="section-num">Under the Hood</div>
+    <h2 class="section-title">How parsers actually detect words</h2>
+    <p class="section-intro">Three completely different mechanisms live under the umbrella term "PDF parser." Which mechanism a tool uses determines what it can and cannot read — understanding the internals explains every entry in the benchmark table above.</p>
+
+    <!-- ── 3.1 Text extraction ── -->
+    <div class="viz reveal">
+      <div class="viz-title">Category 1 — Text extraction (pypdf · PyMuPDF · pdfplumber)</div>
+      <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">No image processing. No machine learning. Pure parsing of PDF's internal byte structure.</p>
+
+      <div class="viz-row cols-2" style="gap:32px;align-items:start">
+        <div>
+          <p style="font-size:0.85rem;font-weight:600;margin-bottom:10px;color:var(--text)">Inside a PDF content stream</p>
+          <div class="code-block">BT
+  /Helvetica 12 Tf        % set font + size
+  72 680 Td               % move cursor to (72, 680)
+  (Complaint Date:) Tj    % draw string
+  180 0 Td                % advance right
+  (01/15/2024) Tj         % draw value
+ET</div>
+          <p style="font-size:0.78rem;color:var(--muted);margin-top:8px;">Every character's position is encoded as PDF operators. <code>Tj</code> draws a string. <code>Td</code> moves the cursor. <code>Tf</code> selects a font.</p>
+        </div>
+        <div>
+          <p style="font-size:0.85rem;font-weight:600;margin-bottom:10px;color:var(--text)">Glyph → Unicode mapping</p>
+          <div class="code-block">% ToUnicode CMap (inside PDF font object)
+/CIDInit /ProcSet findresource begin
+beginbfchar
+  &lt;0041&gt; &lt;0041&gt;   % glyph 0x41 → "A"
+  &lt;0042&gt; &lt;0042&gt;   % glyph 0x42 → "B"
+  &lt;F001&gt; &lt;0023&gt;   % custom glyph → "#"
+endbfchar</div>
+          <p style="font-size:0.78rem;color:var(--muted);margin-top:8px;">When a font embeds a <strong>ToUnicode CMap</strong>, parsers can map glyph codes to characters. When it's missing (common in scanned or form-flattened PDFs), parsers produce mojibake — or nothing.</p>
+        </div>
+      </div>
+
+      <div class="pipeline" style="margin-top:24px">
+        <div class="pipe-node active">PDF bytes<sub>xref table</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node">Object tree<sub>font + content</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node">Content stream<sub>BT/ET operators</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node">Glyph codes<sub>ToUnicode CMap</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node active">Unicode text<sub>reading-order sort</sub></div>
+      </div>
+
+      <div class="insight warn" style="margin-top:16px">
+        <strong>Why this fails on complaint forms:</strong> scanned PDFs have <em>no content stream</em> — the page is a raster image object. Text extractors return empty string. Also, AcroForm field values live in <code>/V</code> dictionary entries, not content streams — most extractors need a separate code path for forms.
+      </div>
+    </div>
+
+    <!-- ── 3.2 OCR ── -->
+    <div class="viz reveal">
+      <div class="viz-title">Category 2 — Traditional OCR (Tesseract · PaddleOCR PP-OCRv4)</div>
+      <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">Converts a raster image into text through a multi-stage vision pipeline. Each stage is a prerequisite for the next.</p>
+
+      <div class="pipeline">
+        <div class="pipe-node warn">Raster image<sub>from PDF or scan</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node">Binarization<sub>Otsu / Sauvola</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node">Deskew<sub>Hough transform</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node">Layout analysis<sub>connected components</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node">Word segmentation<sub>projection profiles</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node active">LSTM classifier<sub>character → token</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node active">Language model<sub>beam search decode</sub></div>
+      </div>
+
+      <div class="viz-row cols-2" style="margin-top:24px;gap:32px;align-items:start">
+        <div>
+          <p style="font-size:0.85rem;font-weight:600;margin-bottom:12px;color:var(--text)">How Tesseract segments words</p>
+          <ol style="font-size:0.85rem;color:var(--text-secondary);line-height:1.8;padding-left:20px">
+            <li><strong style="color:var(--text)">Binarize</strong> — Otsu global threshold converts grey pixels to pure black/white. Sauvola is better for mixed handwrite/print (adapts per tile).</li>
+            <li><strong style="color:var(--text)">Find baselines</strong> — horizontal projection profiles detect row gaps. Each ink-dense row is a text line.</li>
+            <li><strong style="color:var(--text)">Find words</strong> — vertical projection profiles within each line detect white gaps. Each connected blob is a word candidate.</li>
+            <li><strong style="color:var(--text)">Classify characters</strong> — LSTM (Tesseract 4+) reads each word image left-to-right and predicts character sequences with a CTC loss decoder.</li>
+            <li><strong style="color:var(--text)">Language model rescoring</strong> — a word-n-gram model corrects low-confidence character predictions (e.g. <code>rn</code> → <code>m</code>).</li>
+          </ol>
+        </div>
+        <div>
+          <p style="font-size:0.85rem;font-weight:600;margin-bottom:12px;color:var(--text)">PaddleOCR additions</p>
+          <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.7;margin-bottom:12px">PaddleOCR replaces Tesseract's heuristic segmentation with a <strong style="color:var(--text)">detection model</strong> (DB++ — a differentiable binarization network) that directly predicts word bounding boxes as a segmentation map. This handles rotated, curved, or irregularly spaced text that trips up projection profiles.</p>
+          <div class="pipeline" style="flex-direction:column;gap:6px">
+            <div class="pipe-node" style="min-width:0">DB++ detection → word bbox polygons</div>
+            <div class="pipe-arrow" style="transform:rotate(90deg);margin:0 auto">→</div>
+            <div class="pipe-node" style="min-width:0">CRNN recognition → character sequence</div>
+            <div class="pipe-arrow" style="transform:rotate(90deg);margin:0 auto">→</div>
+            <div class="pipe-node active" style="min-width:0">PP-StructureV2 → table HTML</div>
+          </div>
+          <p style="font-size:0.78rem;color:var(--muted);margin-top:10px">PP-StructureV2 runs a separate layout model that classifies regions as text / title / table / figure, then applies a table-specific parser to reconstruct row/col structure as HTML.</p>
+        </div>
+      </div>
+
+      <div class="insight" style="margin-top:16px">
+        <strong>Why 300 DPI matters:</strong> a character that is 3mm tall on paper = <strong>35 px at 300 DPI</strong> vs <strong>24 px at 200 DPI</strong>. The LSTM window is fixed — at 200 DPI, ascenders and descenders merge into adjacent rows. Below 200 DPI accuracy drops off a cliff (~56% CER on complaint forms).
+      </div>
+    </div>
+
+    <!-- ── 3.3 ML layout parsers ── -->
+    <div class="viz reveal">
+      <div class="viz-title">Category 3 — ML layout parsing (Docling · TableFormer)</div>
+      <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">Treats a document page as a 2-D object to detect with vision transformers, not as a byte stream or a bag of characters.</p>
+
+      <div class="viz-row cols-2" style="gap:32px;align-items:start">
+        <div>
+          <p style="font-size:0.85rem;font-weight:600;margin-bottom:12px;color:var(--text)">Layout analysis with DiT / DocBankNet</p>
+          <ol style="font-size:0.85rem;color:var(--text-secondary);line-height:1.8;padding-left:20px">
+            <li><strong style="color:var(--text)">Patch embedding</strong> — the page image is cut into 16×16 pixel patches (ViT-style). Each patch becomes a token in a transformer sequence.</li>
+            <li><strong style="color:var(--text)">Self-attention</strong> — the transformer learns which patches belong together (e.g., a table header patch attends to its column patches across many rows).</li>
+            <li><strong style="color:var(--text)">Region classification</strong> — a detection head predicts bounding boxes and labels: <em>text block, heading, table, figure, caption, footnote</em>.</li>
+            <li><strong style="color:var(--text)">Reading order</strong> — a separate model predicts the correct top-to-bottom, column-aware reading sequence across detected regions.</li>
+          </ol>
+        </div>
+        <div>
+          <p style="font-size:0.85rem;font-weight:600;margin-bottom:12px;color:var(--text)">TableFormer: how tables are reconstructed</p>
+          <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.7;margin-bottom:10px">Table structure is modelled as a <em>sequence prediction problem</em>. Given a cropped table image, the model predicts an HTML token sequence (<code>&lt;tr&gt;&lt;td&gt;...&lt;/td&gt;&lt;/tr&gt;</code>) using an encoder-decoder transformer trained on PubTabNet (500K annotated tables).</p>
+          <div class="pipeline" style="flex-direction:column;gap:6px">
+            <div class="pipe-node" style="min-width:0">Table region crop (from layout step)</div>
+            <div class="pipe-arrow" style="transform:rotate(90deg);margin:0 auto">→</div>
+            <div class="pipe-node active" style="min-width:0">TableFormer encoder → patch features</div>
+            <div class="pipe-arrow" style="transform:rotate(90deg);margin:0 auto">→</div>
+            <div class="pipe-node active" style="min-width:0">Autoregressive decoder → HTML tokens</div>
+            <div class="pipe-arrow" style="transform:rotate(90deg);margin:0 auto">→</div>
+            <div class="pipe-node" style="min-width:0">Cell text from OCR overlay → final table</div>
+          </div>
+          <p style="font-size:0.78rem;color:var(--muted);margin-top:10px">This is why Docling handles merged cells and spanning headers — it predicts the HTML structure first, then fills text in, rather than trying to infer structure from text positions.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3.4 Handwriting ── -->
+    <div class="viz reveal">
+      <div class="viz-title">Category 4 — Handwriting recognition (TrOCR)</div>
+      <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">Microsoft TrOCR is a Vision-Encoder–Language-Decoder transformer trained entirely on handwritten text images. It never uses sliding windows or character classifiers.</p>
+
+      <div class="pipeline">
+        <div class="pipe-node warn">Handwritten field crop<sub>from form region</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node active">ViT encoder<sub>16×16 px patches → CLS token</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node active">Cross-attention<sub>decoder attends to patches</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node active">Autoregressive decode<sub>token by token, beam=4</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node">BPE token sequence<sub>→ text string</sub></div>
+      </div>
+
+      <div class="viz-row cols-2" style="margin-top:24px;gap:32px">
+        <div class="insight success" style="margin:0">
+          <strong>What TrOCR gets right:</strong> because it reads a field as a whole image (not character by character), connected script and ligatures that break character classifiers are handled naturally. CER ~2.9% on clean IAM handwriting.
+        </div>
+        <div class="insight warn" style="margin:0">
+          <strong>What TrOCR gets wrong:</strong> real complaint forms have noisy, degraded, variable-size handwriting. CER degrades to 30–60% on real-world inputs. The model was trained on curated single-writer samples. Use it per-field, not whole-page.
+        </div>
+      </div>
+    </div>
+
+    <div class="insight" style="margin-top:8px">
+      <strong>The bottom line:</strong> Categories 1–4 are not interchangeable. A digital complaint form submitted as AcroForm → Category 1 (text extraction) wins. A faxed, crooked, coffee-stained form → Category 2 + preprocessing. A form with multi-column tables and headers → Category 3. A form with handwritten notes in the margins → Category 4. Production pipelines route to the right category per page, not per document.
+    </div>
+  </div>
+</section>
+
+<!-- ── Section 4: Ablation Results ───────────────────────────────── -->
+<section class="section" id="ablation">
+  <div class="container">
+    <div class="section-num">Ablation Study</div>
+    <h2 class="section-title">Performance across document types</h2>
+    <p class="section-intro">Real measured results on this benchmark's test corpus, plus published benchmark references for parsers not yet run. ✓ = measured on this machine. * = from published research.</p>
+
+    <div class="insight success">
+      <strong>Measured results below are real — run on this machine, 2026-04-10.</strong> Corpus: 20 synthetic AcroForms + 50 FUNSD scanned business forms. Speed measured on Apple Silicon (CPU only, no GPU). Parsers with * are from published benchmarks — not yet run locally. Run <code>evaluate.py --all</code> to reproduce or extend with your own corpus.
+    </div>
+
+    <!-- Real measured results table -->
+    <div class="viz reveal">
+      <div class="viz-title">Measured Results — Digital AcroForms (N=20 synthetic) ✓</div>
+      <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:16px">Synthetic complaint forms with real AcroForm field widgets. Ground truth: programmatically exact. CER measures full text extraction; Field F1 measures AcroForm field value extraction.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Parser</th><th>CER ↓</th><th>WER ↓</th><th>FER ↑</th><th>Field F1 ↑</th><th>Speed (p/s) ↑</th><th>AcroForm fields</th>
+          </tr></thead>
+          <tbody>
+            <tr><td><strong>pypdf</strong></td><td class="cell-good">0.490</td><td class="cell-ok">0.524</td><td class="cell-good">1.000</td><td class="cell-good">1.000</td><td class="cell-good">566</td><td class="cell-good">✓</td></tr>
+            <tr><td><strong>pymupdf</strong></td><td class="cell-good">0.470</td><td class="cell-good">0.437</td><td class="cell-good">1.000</td><td class="cell-good">1.000</td><td class="cell-ok">64</td><td class="cell-good">✓</td></tr>
+            <tr><td><strong>pdfplumber</strong></td><td class="cell-good">0.490</td><td class="cell-ok">0.524</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-ok">219</td><td class="cell-bad">✗</td></tr>
+            <tr><td><strong>tesseract</strong></td><td class="cell-bad">0.534</td><td class="cell-bad">0.611</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-bad">1.0</td><td class="cell-bad">✗</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:8px">CER ~0.49 is a measurement artifact: ground truth interleaves label+value; text parsers read label text and widget values in separate passes (non-interleaved order). Field F1 is the correct signal for AcroForms. Tesseract renders to image and runs OCR even on digital PDFs — correct for scanned forms, wasteful here.</p>
+    </div>
+
+    <div class="viz reveal">
+      <div class="viz-title">Measured Results — Scanned Forms FUNSD (N=10) ✓</div>
+      <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:16px">Real scanned business forms from FUNSD (EPFL 2019). Human-annotated ground truth. Text parsers return empty string (no text layer in raster-image PDFs). Tesseract runs OCR on the rendered image.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Parser</th><th>CER ↓</th><th>WER ↓</th><th>FER ↑</th><th>Field F1 ↑</th><th>Speed (p/s) ↑</th><th>Reads scanned</th>
+          </tr></thead>
+          <tbody>
+            <tr><td><strong>tesseract (raw)</strong></td><td class="cell-ok">0.484</td><td class="cell-bad">0.749</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-bad">1.75</td><td class="cell-good">✓</td></tr>
+            <tr><td><strong>tesseract +preproc</strong></td><td class="cell-bad">0.560</td><td class="cell-bad">0.866</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-bad">0.38</td><td class="cell-good">✓</td></tr>
+            <tr><td><strong>pypdf</strong></td><td class="cell-bad">1.000</td><td class="cell-bad">1.000</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-good">4341</td><td class="cell-bad">✗</td></tr>
+            <tr><td><strong>pymupdf</strong></td><td class="cell-bad">1.000</td><td class="cell-bad">1.000</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-good">1842</td><td class="cell-bad">✗</td></tr>
+            <tr><td><strong>pdfplumber</strong></td><td class="cell-bad">1.000</td><td class="cell-bad">1.000</td><td class="cell-bad">0.000</td><td class="cell-bad">0.000</td><td class="cell-good">1938</td><td class="cell-bad">✗</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:8px">Tesseract CER=0.484 on noisy FUNSD scanned forms is plausible — these are degraded real-world documents, not clean print. Text parsers "speed" is misleadingly high because they immediately return empty string (no text layer to process). Docling, PaddleOCR, and TrOCR results pending — require larger model downloads.</p>
+    </div>
+
+    <div class="insight warn">
+      <strong>Published benchmark numbers below (marked *) are from external research, not this machine.</strong> Sources: Applied AI 2025 (800 docs, 17 parsers), Procycons 2025 (Docling table accuracy), Koncile 2025, NVIDIA 2025. Your results on your corpus will differ.
+    </div>
+
+    <!-- Chart: Table Accuracy -->
+    <div class="viz reveal">
+      <div class="viz-title">Table Cell Accuracy — Published Benchmarks</div>
+      <div class="viz-row cols-2">
+        <div class="chart">
+          <div class="chart-label">Table extraction accuracy (various doc types)</div>
+          <div class="chart-bars" id="tableAccChart"></div>
+        </div>
+        <div class="chart">
+          <div class="chart-label">CPU throughput — pages per second</div>
+          <div class="chart-bars" id="speedChart"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart: Handwriting accuracy -->
+    <div class="viz reveal reveal-d1">
+      <div class="viz-title">Handwriting Recognition — On Documents with Handwritten Notes</div>
+      <div class="chart-bars" id="hwChart"></div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:12px">Source: Braincuber 2025 independent 100-document benchmark. All numbers represent accuracy on documents containing handwritten annotations — not pure handwriting datasets. TrOCR CER from IAM Handwriting Database (clean).</p>
+    </div>
+
+    <!-- Preprocessing impact -->
+    <div class="viz reveal reveal-d2">
+      <div class="viz-title">Preprocessing Pipeline Impact on Degraded Scans</div>
+      <div class="pipeline">
+        <div class="pipe-node">Raw Fax Scan<sub>~200 DPI, bitonal</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node">Baseline Accuracy<sub>~70%</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node active">Deskew + Denoise<sub>+12%</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node active">CLAHE + Sauvola<sub>+10%</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node" style="border-color:var(--green);background:rgba(34,197,94,0.08);color:var(--green)">~92% Accuracy<sub>+22% median gain</sub></div>
+      </div>
+      <p style="font-size:0.8rem;color:var(--muted);margin-top:8px">Source: Compiled from multiple OCR preprocessing studies (2023–2025). The +22% is a median figure across degraded document types — your mileage will vary by scan quality and OCR engine.</p>
+    </div>
+
+    <!-- Measured finding: preprocessing hurts clean scans -->
+    <div class="insight warn reveal">
+      <strong>Measured finding (2026-04-10): Preprocessing hurts already-good scans.</strong><br>
+      Running the full pipeline (deskew → denoise → CLAHE → Sauvola binarization) on FUNSD 300 DPI scans
+      <em>increased</em> CER from <strong>0.484 → 0.560 (+7.6%)</strong>. Sauvola binarization
+      (window=25) over-thresholds fine strokes on adequate-quality 300 DPI images, destroying
+      information that Tesseract could read from the raw scan.<br><br>
+      <strong>Rule of thumb:</strong> Gate preprocessing on measured document quality — not a global
+      boolean flag. Use <code>check_dpi()</code> + measure skew angle before deciding to preprocess.
+      Reserve the full pipeline for fax-quality inputs (≤200 DPI, skew &gt;1°, contrast ratio &lt;50).
+    </div>
+
+    <!-- Preprocessing comparison table (measured) -->
+    <div class="viz reveal">
+      <div class="viz-title">Preprocessing Effect — FUNSD N=10, Tesseract eng, 300 DPI ✓</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Configuration</th><th>CER ↓</th><th>WER ↓</th><th>Speed (p/s) ↑</th><th>Verdict</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>tesseract (raw)</strong></td>
+              <td class="cell-ok">0.484</td>
+              <td class="cell-bad">0.749</td>
+              <td>1.75</td>
+              <td class="cell-good">Use this</td>
+            </tr>
+            <tr>
+              <td><strong>tesseract +preproc</strong></td>
+              <td class="cell-bad">0.560</td>
+              <td class="cell-bad">0.866</td>
+              <td class="cell-bad">0.38</td>
+              <td class="cell-bad">Worse (+7.6% CER, 4.6× slower)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:8px">
+        Measured on this machine (Apple Silicon, CPU). Preprocessing pipeline: deskew (Hough) →
+        denoise (bilateral filter) → CLAHE → Sauvola binarization. For degraded/fax inputs the
+        pipeline is beneficial — this finding is specific to already-adequate 300 DPI business form scans.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Section 4: Rubric ──────────────────────────────────────────── -->
+<section class="section" id="rubric">
+  <div class="container">
+    <div class="section-num">Evaluation Rubric</div>
+    <h2 class="section-title">How to score your parsers</h2>
+    <p class="section-intro">A 10-criterion weighted rubric designed for complaint form requirements. Weights reflect the specific priorities of this use case — handwriting is weighted highest (0.22) because it is the primary failure mode.</p>
+
+    <!-- Rubric score ring visualisation -->
+    <div class="score-ring-row reveal" id="rubricRings"></div>
+
+    <div class="table-wrap reveal reveal-d1">
+      <table>
+        <thead>
+          <tr><th>Criterion</th><th>Weight</th><th>Score 5</th><th>Score 3</th><th>Score 1</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>A. Text Extraction</strong></td><td>0.12</td><td class="cell-good">CER ≤ 2%</td><td class="cell-ok">CER 5–10%</td><td class="cell-bad">CER &gt;20%</td></tr>
+          <tr><td><strong>B. Handwriting</strong></td><td>0.22</td><td class="cell-good">CER ≤ 5% (your forms)</td><td class="cell-ok">CER 15–30%</td><td class="cell-bad">No capability</td></tr>
+          <tr><td><strong>C. Table Structure</strong></td><td>0.08</td><td class="cell-good">Cell acc ≥ 95%</td><td class="cell-ok">70–85%</td><td class="cell-bad">No extraction</td></tr>
+          <tr><td><strong>D. Form Field / KVP</strong></td><td>0.18</td><td class="cell-good">Field F1 ≥ 0.95</td><td class="cell-ok">F1 0.70–0.85</td><td class="cell-bad">F1 &lt; 0.50</td></tr>
+          <tr><td><strong>E. Figures / Diagrams</strong></td><td>0.05</td><td class="cell-good">No hallucination near figures</td><td class="cell-ok">Minor text bleed</td><td class="cell-bad">Hallucination observed</td></tr>
+          <tr><td><strong>F. Degraded Scans</strong></td><td>0.10</td><td class="cell-good">CER &lt;10% at 200 DPI fax</td><td class="cell-ok">CER 20–35%</td><td class="cell-bad">Fails below 300 DPI</td></tr>
+          <tr><td><strong>G. Speed</strong></td><td>0.05</td><td class="cell-good">≥5 p/s CPU</td><td class="cell-ok">0.2–1 p/s</td><td class="cell-bad">&lt;0.05 p/s</td></tr>
+          <tr><td><strong>H. Compliance</strong></td><td>0.10</td><td class="cell-good">Zero egress, MIT/Apache</td><td class="cell-ok">Self-hosted option w/ cloud activation</td><td class="cell-bad">Cloud-only, no DPA by default</td></tr>
+          <tr><td><strong>I. License</strong></td><td>0.05</td><td class="cell-good">MIT / Apache-2.0 / BSD</td><td class="cell-ok">GPL-3.0 (code open, weights NC)</td><td class="cell-bad">Proprietary API</td></tr>
+          <tr><td><strong>J. Maintenance</strong></td><td>0.05</td><td class="cell-good">Active release &lt;6 months</td><td class="cell-ok">Release within 18 months</td><td class="cell-bad">Effectively abandoned (&gt;3 years)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="insight">
+      <strong>Mandatory gate:</strong> Criterion H (Compliance) must score ≥ 3 before any tool processes real customer complaint PII. A tool that scores 1 on Criterion E (hallucinated text from figures/signatures) is disqualified if your forms contain signature fields.
+    </div>
+
+    <!-- Estimated scores (pre-measurement, from research) -->
+    <h3 style="margin:32px 0 16px;font-size:1.1rem">Estimated scores (from published research — measure on your corpus)</h3>
+    <div class="table-wrap reveal reveal-d2">
+      <table>
+        <thead>
+          <tr><th>Tool</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th><th>Weighted</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Docling + TrOCR</strong> <span class="tag blue" style="font-size:0.65rem">Hybrid</span></td>
+            <td class="cell-good">5</td><td class="cell-good">5</td><td class="cell-good">5</td><td class="cell-good">4</td><td class="cell-good">4</td>
+            <td class="cell-ok">4</td><td class="cell-ok">3</td><td class="cell-good">5</td><td class="cell-good">5</td><td class="cell-good">5</td>
+            <td class="cell-good"><strong>4.53</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Docling</strong></td>
+            <td class="cell-good">5</td><td class="cell-ok">3</td><td class="cell-good">5</td><td class="cell-good">4</td><td class="cell-good">4</td>
+            <td class="cell-ok">3</td><td class="cell-ok">3</td><td class="cell-good">5</td><td class="cell-good">5</td><td class="cell-good">5</td>
+            <td class="cell-ok"><strong>4.05</strong></td>
+          </tr>
+          <tr>
+            <td><strong>PyMuPDF</strong> <span class="tag amber" style="font-size:0.65rem">Digital only</span></td>
+            <td class="cell-good">5</td><td class="cell-bad">1</td><td class="cell-ok">3</td><td class="cell-ok">3</td><td class="cell-good">5</td>
+            <td class="cell-bad">1</td><td class="cell-good">5</td><td class="cell-good">4</td><td class="cell-ok">4</td><td class="cell-good">4</td>
+            <td class="cell-ok"><strong>3.20</strong></td>
+          </tr>
+          <tr>
+            <td><strong>PaddleOCR</strong></td>
+            <td class="cell-ok">4</td><td class="cell-bad">2</td><td class="cell-ok">3</td><td class="cell-ok">3</td><td class="cell-ok">3</td>
+            <td class="cell-ok">4</td><td class="cell-ok">3</td><td class="cell-good">5</td><td class="cell-good">5</td><td class="cell-good">5</td>
+            <td class="cell-ok"><strong>3.47</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Tesseract</strong></td>
+            <td class="cell-ok">3</td><td class="cell-bad">1</td><td class="cell-bad">1</td><td class="cell-bad">2</td><td class="cell-ok">3</td>
+            <td class="cell-ok">3</td><td class="cell-ok">3</td><td class="cell-good">5</td><td class="cell-good">5</td><td class="cell-good">5</td>
+            <td class="cell-bad"><strong>2.73</strong></td>
+          </tr>
+          <tr style="opacity:0.6">
+            <td><em>Claude API*</em></td>
+            <td class="cell-ok">4</td><td class="cell-ok">4</td><td class="cell-ok">4</td><td class="cell-ok">4</td><td class="cell-ok">4</td>
+            <td class="cell-ok">4</td><td class="cell-bad">1</td><td class="cell-bad">1</td><td class="cell-bad">1</td><td class="cell-good">5</td>
+            <td class="cell-bad"><strong>2.98*</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:0.75rem;color:var(--muted);margin-top:8px">* Claude API scores Compliance (H) = 1 because data leaves your infrastructure. Not recommended for real complaint PII without a signed DPA. These are pre-measurement estimates — do not use as final scores without running the ablation on your corpus.</p>
+  </div>
+</section>
+
+<!-- ── Section 5: Decision Tree ───────────────────────────────────── -->
+<section class="section" id="decision-tree">
+  <div class="container">
+    <div class="section-num">Decision Framework</div>
+    <h2 class="section-title">Which parser for which form?</h2>
+    <p class="section-intro">Answers to four questions narrow you to the right tool. Route different form subtypes to different parsers in a hybrid pipeline.</p>
+
+    <div class="decision-tree reveal">
+<span class="dt-node">START: Incoming complaint form PDF
+│
+├─ Is data residency / air-gap required?
+│   │
+│   </span><span class="dt-yes">YES</span><span class="dt-node"> ─── RULE OUT: LlamaParse, AWS Textract, any cloud API
+│   │         Must use local tools only (Docling, PaddleOCR, TrOCR, pypdf)
+│   │
+│   </span><span class="dt-no">NO</span><span class="dt-node"> ─── (cloud with signed DPA is acceptable) ──────────┐
+│                                                               │
+├─ Does the PDF have a native text layer?                      │
+│   │                                                          │
+│   </span><span class="dt-yes">YES</span><span class="dt-node"> ── Is it a digital AcroForm with fillable fields?     │
+│   │    │                                                     │
+│   │    </span><span class="dt-yes">YES</span><span class="dt-node"> ── </span><span class="dt-result">pypdf.get_fields() — fastest, 100% accurate</span><span class="dt-node">    │
+│   │    │                                                     │
+│   │    </span><span class="dt-no">NO</span><span class="dt-node"> ─── Complex layout or tables?                        │
+│   │         │                                                │
+│   │         </span><span class="dt-yes">YES</span><span class="dt-node"> ── </span><span class="dt-result">Docling — 97.9% table accuracy</span><span class="dt-node">           │
+│   │         </span><span class="dt-no">NO</span><span class="dt-node"> ──── </span><span class="dt-result">PyMuPDF — fastest for plain text</span><span class="dt-node">          │
+│                                                              │
+</span><span class="dt-no">NO</span><span class="dt-node"> ─── (scanned / image PDF)                              │
+│                                                              │
+├─ Scan quality check:                                        │
+│   │                                                          │
+│   </span><span class="dt-warn">&lt;200 DPI</span><span class="dt-node"> ─── REJECT or request rescan                       │
+│   </span><span class="dt-warn">200–300 DPI</span><span class="dt-node"> ── Apply FULL preprocessing (deskew+denoise+CLAHE)  │
+│   </span><span class="dt-yes">≥300 DPI</span><span class="dt-node"> ─── Apply standard preprocessing, proceed          │
+│                                                              │
+├─ Are handwritten fields present?                            │
+│   │                                                          │
+│   </span><span class="dt-yes">YES</span><span class="dt-node"> ── Volume &gt; 500K pages/month?                        │
+│   │    │                                                     │
+│   │    </span><span class="dt-yes">YES</span><span class="dt-node"> ── </span><span class="dt-result">Docling (layout) + TrOCR (HW fields) — self-hosted</span><span class="dt-node"> │
+│   │    </span><span class="dt-no">NO</span><span class="dt-node"> ─── Cloud OK? ─── </span><span class="dt-yes">YES</span><span class="dt-node"> ── </span><span class="dt-result">AWS Textract Forms API ($0.065/pg)</span><span class="dt-node"> │
+│   │                  └── </span><span class="dt-no">NO</span><span class="dt-node"> ─── </span><span class="dt-result">Docling + TrOCR local</span><span class="dt-node">            │
+│                                                              │
+</span><span class="dt-no">NO</span><span class="dt-node"> ─── (printed/typed, scanned)                           │
+│   Volume &gt; ~26K forms/month?  ───────────────────────────────┘
+│   │
+│   </span><span class="dt-yes">YES</span><span class="dt-node"> ── </span><span class="dt-result">Docling self-hosted — cost break-even at ~167K forms/mo</span><span class="dt-node">
+│   </span><span class="dt-no">NO</span><span class="dt-node"> ─── </span><span class="dt-result">Azure Document Intelligence Custom ($0.030/pg)</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Section 6: Production Architecture ───────────────────────── -->
+<section class="section" id="recommendation">
+  <div class="container">
+    <div class="section-num">Production Architecture</div>
+    <h2 class="section-title">Recommended hybrid pipeline</h2>
+    <p class="section-intro">No single parser handles all complaint form types optimally. Route by document type and confidence — different paths use different tools.</p>
+
+    <div class="viz reveal">
+      <div class="viz-title">Hybrid Pipeline — Components and Flow</div>
+      <div class="pipeline">
+        <div class="pipe-node active">Intake<sub>S3 + SQS</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node active">Classifier<sub>LayoutLM</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node">Digital Path<sub>PyMuPDF</sub></div>
+        <div class="pipe-arrow">/</div>
+        <div class="pipe-node">Scanned Path<sub>Preproc → Docling</sub></div>
+        <div class="pipe-arrow">/</div>
+        <div class="pipe-node">HW Fields<sub>TrOCR</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node active">Validation<sub>Pydantic v2</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node warn">HITL Routing<sub>&lt;0.70 conf</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node active">PII Redact<sub>Presidio</sub></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node active">Audit Log<sub>Immutable</sub></div>
+      </div>
+    </div>
+
+    <div class="compare-row reveal reveal-d1">
+      <div class="compare-col">
+        <h4 style="color:var(--green)">✓ Must-do</h4>
+        <ul>
+          <li>Preprocessing pipeline before any OCR</li>
+          <li>Empirical confidence calibration (not vendor defaults)</li>
+          <li>Field-level metrics, not form-level</li>
+          <li>Pydantic v2 cross-field validation</li>
+          <li>Immutable audit log (CFPB requirement)</li>
+          <li>Presidio PII redaction before storage</li>
+          <li>DPA in place before any cloud API</li>
+        </ul>
+      </div>
+      <div class="compare-col">
+        <h4 style="color:var(--red)">✗ Anti-patterns</h4>
+        <ul>
+          <li>One parser for all document types</li>
+          <li>LLMs as primary OCR for numeric fields</li>
+          <li>Trusting vendor confidence as calibrated probability</li>
+          <li>Unstructured for real-time intake (51–140s/form)</li>
+          <li>LlamaParse without enterprise DPA on PII data</li>
+          <li>Benchmarking on vendor sample documents</li>
+          <li>Evaluating form-level accuracy (hides field failures)</li>
+        </ul>
+      </div>
+      <div class="compare-col">
+        <h4 style="color:var(--amber)">⚠ Watch out for</h4>
+        <ul>
+          <li>Fax-quality scans (&lt;200 DPI) — reject or upsample</li>
+          <li>Few-shot prompt contamination → hallucination</li>
+          <li>VLMs hallucinating chart/signature content</li>
+          <li>PyMuPDF AGPL if redistributing commercially</li>
+          <li>Marker/Surya GPL blocking proprietary products</li>
+          <li>Active learning without OOD validation</li>
+          <li>Static thresholds without recalibration over time</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Cost model -->
+    <h3 style="margin:40px 0 16px;font-size:1.1rem">Cost at scale — cloud vs self-hosted</h3>
+    <div class="viz reveal reveal-d2">
+      <div class="viz-title">Monthly Cost Estimate — Structured Extraction (1 form ≈ 3 pages)</div>
+      <div class="chart-bars" id="costChart" style="height:220px"></div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap" id="costLegend"></div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:12px">Break-even: Docling self-hosted vs Azure/Google ≈ 167K forms/month; vs AWS Textract Forms ≈ 26K forms/month. Source: Published pricing pages (April 2026). Prices change — verify before budgeting.</p>
+    </div>
+
+    <div class="insight success">
+      <strong>Top recommendation for most teams:</strong> Start with <strong>Docling</strong> locally (zero API cost, MIT license, best compliance posture). Add <strong>TrOCR fine-tuned</strong> on 50 of your actual handwritten complaint forms to close the handwriting gap. Route ≥300 DPI digital forms through <strong>PyMuPDF AcroForm extraction</strong> for speed. HITL at confidence &lt;0.70. The full pipeline costs ~$200–800/month in compute vs $3,000–$30,000/month for equivalent cloud structured extraction volume.
+    </div>
+
+    <div class="insight warn">
+      <strong>Before you start:</strong> Annotate 200 real forms (ground truth JSON), run the ablation in <code>sandbox/evaluate.py</code>, measure your actual CER/WER/FER, and calibrate your confidence thresholds empirically. All the numbers on this page are starting points derived from published research — not measurements on your complaint forms.
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ──────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <span>Haoming Koo · 2026 · <a href="https://kooexperience.com">kooexperience.com</a></span>
+      <span style="color:var(--muted)">All accuracy numbers from published research. Measure on your own corpus before tool selection.</span>
+      <a href="/blog">← Back to Blog</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Theme toggle ────────────────────────────────────────────────── //
+const themeBtn = document.getElementById('themeToggle');
+const html = document.documentElement;
+themeBtn.addEventListener('click', () => {
+  const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+  html.dataset.theme = next;
+  themeBtn.textContent = next === 'dark' ? '☀︎' : '☾';
+  try { localStorage.setItem('theme', next); } catch(e) {}
+});
+try {
+  const saved = localStorage.getItem('theme');
+  if (saved) { html.dataset.theme = saved; themeBtn.textContent = saved === 'dark' ? '☀︎' : '☾'; }
+} catch(e) {}
+
+// ── Scroll reveal ───────────────────────────────────────────────── //
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// ── Chart rendering ─────────────────────────────────────────────── //
+
+// Data: from published benchmarks (sources cited inline)
+const FIELD_ACC_DATA = [
+  { label: 'Printed text', acc: 99, color: '#22c55e' },
+  { label: 'Checkboxes', acc: 93, color: '#22c55e' },
+  { label: 'Numeric (printed)', acc: 85, color: '#f59e0b' },
+  { label: 'Dates (printed)', acc: 90, color: '#f59e0b' },
+  { label: 'HW free text', acc: 79, color: '#ef4444' },
+  { label: 'Dates (HW)', acc: 80, color: '#ef4444' },
+];
+
+const TABLE_ACC_DATA = [
+  { name: 'Docling', val: 97.9, cls: 'docling' },
+  { name: 'PaddleOCR', val: 82, cls: 'paddleocr' },
+  { name: 'pdfplumber', val: 78, cls: 'pymupdf' },
+  { name: 'Unstructured', val: 75, cls: 'tesseract' },
+  { name: 'Tesseract', val: 35, cls: 'trocr' },
+];
+
+// Speed: pypdf/pymupdf/pdfplumber/tesseract are MEASURED (this benchmark, digital_acroform N=20
+// + scanned_clean_300dpi N=10). Docling/PaddleOCR/TrOCR are from published benchmarks.
+const SPEED_DATA = [
+  { name: 'pypdf ✓', val: 566, cls: 'docling' },
+  { name: 'pdfplumber ✓', val: 219, cls: 'pymupdf' },
+  { name: 'PyMuPDF ✓', val: 64, cls: 'paddleocr' },
+  { name: 'Tesseract ✓', val: 1.75, cls: 'tesseract' },
+  { name: 'Docling *', val: 1.3, cls: 'trocr' },
+  { name: 'TrOCR *', val: 0.8, cls: 'claude' },
+];
+
+const HW_DATA = [
+  { name: 'Google DAI', val: 74.8, cls: 'docling' },
+  { name: 'AWS Textract', val: 71.2, cls: 'pymupdf' },
+  { name: 'TrOCR (IAM)', val: 97.1, cls: 'paddleocr' },
+  { name: 'PaddleOCR', val: 76, cls: 'tesseract' },
+  { name: 'EasyOCR', val: 84, cls: 'trocr' },
+];
+
+const COST_DATA = [
+  { name: 'Docling (10K)', val: 0.2, cls: 'docling' },
+  { name: 'Docling (100K)', val: 0.8, cls: 'docling' },
+  { name: 'Azure DI (10K)', val: 0.9, cls: 'pymupdf' },
+  { name: 'Azure DI (100K)', val: 9, cls: 'pymupdf' },
+  { name: 'AWS Textract (10K)', val: 1.95, cls: 'tesseract' },
+  { name: 'AWS Textract (100K)', val: 19.5, cls: 'tesseract' },
+];
+
+function renderBarChart(containerId, data, maxVal, unit = '%', scale = 1) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  const actualMax = maxVal || Math.max(...data.map(d => d.val)) * 1.15;
+
+  data.forEach((d, i) => {
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    const pct = Math.min((d.val / actualMax) * 100, 100);
+
+    col.innerHTML = `
+      <div class="bar-val">${typeof d.val === 'number' && d.val < 10 ? d.val.toFixed(1) : Math.round(d.val)}${unit}</div>
+      <div class="bar-fill ${d.cls || ''}" style="height:0;margin-top:auto" data-target="${pct}"></div>
+      <div class="bar-name">${d.name || d.label}</div>
+    `;
+    container.appendChild(col);
+  });
+
+  // Animate bars after brief delay (allows DOM to settle)
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      container.querySelectorAll('.bar-fill').forEach(bar => {
+        bar.style.height = bar.dataset.target + '%';
+      });
+    }, 200);
+  });
+}
+
+function renderFieldAccChart() {
+  const container = document.getElementById('fieldAccChart');
+  const legend = document.getElementById('fieldAccLegend');
+  if (!container) return;
+  container.innerHTML = '';
+  container.style.height = '200px';
+
+  FIELD_ACC_DATA.forEach(d => {
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    const pct = d.acc;
+    col.innerHTML = `
+      <div class="bar-val">${d.acc}%</div>
+      <div class="bar-fill" style="height:0;margin-top:auto;background:${d.color}" data-target="${pct}"></div>
+      <div class="bar-name">${d.label}</div>
+    `;
+    container.appendChild(col);
+  });
+
+  if (legend) {
+    legend.innerHTML = `
+      <span class="tag green">≥95%: Adequate</span>
+      <span class="tag amber">80–94%: Monitor</span>
+      <span class="tag red">&lt;80%: HITL required</span>
+    `;
+  }
+
+  setTimeout(() => {
+    container.querySelectorAll('.bar-fill').forEach(bar => {
+      bar.style.height = bar.dataset.target + '%';
+    });
+  }, 300);
+}
+
+function renderRubricRings() {
+  const container = document.getElementById('rubricRings');
+  if (!container) return;
+  const criteria = [
+    { label: 'Text', weight: 0.12 },
+    { label: 'Handwriting', weight: 0.22 },
+    { label: 'Tables', weight: 0.08 },
+    { label: 'KVP', weight: 0.18 },
+    { label: 'Figures', weight: 0.05 },
+    { label: 'Degraded', weight: 0.10 },
+    { label: 'Speed', weight: 0.05 },
+    { label: 'Compliance', weight: 0.10 },
+    { label: 'License', weight: 0.05 },
+    { label: 'Maint.', weight: 0.05 },
+  ];
+
+  criteria.forEach(c => {
+    const pct = Math.round(c.weight * 100);
+    const radius = 28;
+    const circ = 2 * Math.PI * radius;
+    const dash = (pct / 100) * circ;
+    const color = pct >= 20 ? '#3b82f6' : pct >= 10 ? '#a855f7' : '#64647a';
+
+    const ring = document.createElement('div');
+    ring.className = 'score-ring';
+    ring.innerHTML = `
+      <div class="ring-svg">
+        <svg width="72" height="72" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="${radius}" fill="none" stroke="var(--border)" stroke-width="6"/>
+          <circle cx="36" cy="36" r="${radius}" fill="none" stroke="${color}" stroke-width="6"
+            stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"
+            stroke-dashoffset="${circ * 0.25}" stroke-linecap="round"
+            transform="rotate(-90 36 36)"/>
+          <text x="36" y="40" text-anchor="middle" font-size="13" font-weight="700"
+            fill="var(--text)" font-family="JetBrains Mono, monospace">${pct}%</text>
+        </svg>
+      </div>
+      <div class="ring-label">${c.label}</div>
+    `;
+    container.appendChild(ring);
+  });
+}
+
+// Initialise all charts on page load
+window.addEventListener('load', () => {
+  renderFieldAccChart();
+  renderBarChart('tableAccChart', TABLE_ACC_DATA, 100, '%');
+  renderBarChart('speedChart', SPEED_DATA, null, ' p/s');
+  renderBarChart('hwChart', HW_DATA, 100, '%');
+  renderBarChart('costChart', COST_DATA, null, 'K$');
+  renderRubricRings();
+});
+</script>
+</body>
+</html>

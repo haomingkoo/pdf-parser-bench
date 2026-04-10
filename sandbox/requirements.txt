@@ -1,0 +1,75 @@
+# ============================================================
+# PDF Parsing Sandbox — Open Source / On-Prem Only
+# All packages are free; no API keys required for core parsers
+# ============================================================
+
+# --- Core PDF text extraction (text-layer PDFs) ---
+pypdf==4.3.1                  # BSD-3; AcroForm field extraction
+pdfplumber==0.11.4            # MIT; best rule-based table extraction
+pdfminer.six==20231228        # MIT; low-level layout objects
+pymupdf==1.24.11              # AGPL-3.0 (free for internal/OSS use; Artifex commercial license for redistribution)
+pypdfium2==4.30.0             # Apache-2.0; fastest text extraction benchmark winner
+
+# --- Table extraction specialists ---
+camelot-py[cv]==0.11.0        # MIT; lattice/stream table extraction from text PDFs
+tabula-py==2.9.3              # MIT; Java-based table extraction (requires JVM)
+
+# --- OCR engines ---
+pytesseract==0.3.13           # Apache-2.0; Tesseract Python wrapper
+easyocr==1.7.2                # Apache-2.0; deep learning OCR, 80+ languages
+paddlepaddle==2.6.2           # Apache-2.0; PaddleOCR backend
+paddleocr==2.8.1              # Apache-2.0; full OCR + layout + table pipeline
+
+# --- HTR (Handwritten Text Recognition) ---
+# TrOCR via HuggingFace Transformers
+transformers==4.44.2          # Apache-2.0; TrOCR, LayoutLM, Donut models
+torch==2.4.1                  # BSD-3; PyTorch backend
+torchvision==0.19.1           # BSD-3
+
+# --- ML layout parsers ---
+docling==2.13.0               # MIT; IBM's best-in-class open-source parser
+docling-core==2.6.0           # MIT
+docling-ibm-models==3.0.2     # MIT
+
+# --- Document segmentation ---
+# aryn-sdk==0.8.0             # Apache-2.0; Aryn Sycamore segmentation (optional, uncomment to enable)
+
+# --- Image preprocessing (mandatory for scanned PDFs) ---
+opencv-python-headless==4.10.0.84  # Apache-2.0; deskew, denoise, binarize
+scikit-image==0.24.0          # BSD-3; Sauvola thresholding, Hough transform
+Pillow==10.4.0                # HPND; image I/O
+pdf2image==1.17.0             # MIT; render PDF pages as images (requires poppler)
+ocrmypdf==16.5.3              # MPL-2.0; end-to-end OCR pipeline with deskew/clean
+
+# --- Metrics and evaluation ---
+jiwer==3.0.4                  # Apache-2.0; WER, CER computation
+editdistance==0.8.1           # MIT; Levenshtein distance
+rapidfuzz==3.9.7              # MIT; fuzzy string matching
+numpy==1.26.4                 # BSD-3
+pandas==2.2.3                 # BSD-3
+scipy==1.14.1                 # BSD-3
+
+# --- Validation ---
+pydantic==2.9.2               # MIT; field and cross-field validation
+pydantic-settings==2.5.2      # MIT
+
+# --- Ablation runner ---
+tqdm==4.66.5                  # MPL-2.0; progress bars
+rich==13.9.1                  # MIT; terminal output formatting
+click==8.1.7                  # BSD-3; CLI interface
+PyYAML==6.0.2                 # MIT; config files
+jsonlines==4.0.0              # MIT; JSONL result storage
+
+# --- Visualization / reporting ---
+matplotlib==3.9.2             # PSF; accuracy plots, calibration curves
+seaborn==0.13.2               # BSD-3; heatmaps
+plotly==5.24.1                # MIT; interactive charts
+nbformat==5.10.4              # BSD-3; Jupyter notebook output
+
+# --- Optional: Claude API comparison (NOT on-prem — requires ANTHROPIC_API_KEY) ---
+# anthropic==0.35.0           # MIT; Claude API client. Uncomment to include Claude in comparison.
+#                              # Note: data leaves your infrastructure. Do not use with real complaint PII.
+
+# --- Testing ---
+pytest==8.3.3                 # MIT
+pytest-cov==5.0.0             # MIT

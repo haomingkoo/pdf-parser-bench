@@ -1,0 +1,75 @@
+version: "3.9"
+
+# PDF Parsing Sandbox — fully self-contained, no internet required after build
+# All tools run on-prem. No API keys needed for core parsers.
+#
+# Usage:
+#   docker compose build
+#   docker compose run --rm parser python evaluate.py --help
+#   docker compose run --rm parser python evaluate.py --all
+#   docker compose run --rm parser python scripts/download_datasets.py
+
+services:
+  parser:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./data:/app/data          # test PDFs and ground truth
+      - ./results:/app/results    # evaluation outputs
+      - ./src:/app/src            # source code (hot-reload)
+      - ./notebooks:/app/notebooks
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
+      # Uncomment to enable Claude API comparison (data leaves your infra):
+      # - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    working_dir: /app
+    command: ["python", "evaluate.py", "--help"]
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 4G
+
+  # Optional GPU service for PaddleOCR + TrOCR acceleration
+  # Requires nvidia-container-toolkit installed on host
+  parser-gpu:
+    build:
+      context: .
+      dockerfile: Dockerfile.gpu
+    volumes:
+      - ./data:/app/data
+      - ./results:/app/results
+      - ./src:/app/src
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
+    working_dir: /app
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    profiles:
+      - gpu  # only starts with: docker compose --profile gpu up
+
+  # Jupyter notebook server for results analysis
+  notebook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./data:/app/data
+      - ./results:/app/results
+      - ./notebooks:/app/notebooks
+    ports:
+      - "8888:8888"
+    working_dir: /app
+    command: ["jupyter", "notebook", "--ip=0.0.0.0", "--no-browser", "--allow-root", "--notebook-dir=/app/notebooks"]
+    profiles:
+      - notebook
