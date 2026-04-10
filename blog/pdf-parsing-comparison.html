@@ -35,6 +35,7 @@
     "publisher": {"@type": "Person", "name": "Haoming Koo"}
   }
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 
   <style>
     /* ── CSS Variables ───────────────────────────────────────────── */
@@ -323,11 +324,6 @@
       display: flex; align-items: center; gap: 0;
       margin: 28px 0; flex-wrap: wrap; gap: 4px;
     }
-    .pipe-node {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; padding: 12px 18px; font-size: 0.82rem;
-      font-weight: 600; text-align: center; flex: 1; min-width: 100px;
-    }
     .pipe-node.active { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
     .pipe-node.warn { border-color: var(--amber); background: rgba(245,158,11,0.08); color: var(--amber); }
     .pipe-node sub { display: block; font-size: 0.68rem; font-weight: 400; color: var(--muted); margin-top: 2px; }
@@ -371,6 +367,42 @@
     .compare-col ul li { font-size: 0.83rem; color: var(--text-secondary); padding: 4px 0; border-bottom: 1px solid var(--border); }
     .compare-col ul li:last-child { border-bottom: none; }
     .compare-col ul li::before { content: '▸ '; color: var(--accent); }
+
+    /* ── Pipe-node overflow fix ─────────────────────────────────── */
+    .pipe-node {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 14px; font-size: 0.82rem;
+      font-weight: 600; text-align: center;
+      flex: 1 1 80px; min-width: 0;
+      overflow-wrap: break-word; word-break: break-word; hyphens: auto;
+    }
+    .pipeline { overflow-x: auto; }
+
+    /* ── Stat-val overflow fix ───────────────────────────────────── */
+    .stat-val { overflow: visible; line-height: 1.2; }
+
+    /* ── Horizontal accuracy chart ──────────────────────────────── */
+    .h-acc-chart { display: flex; flex-direction: column; gap: 10px; padding: 4px 0; }
+    .h-acc-row { display: flex; align-items: center; gap: 10px; }
+    .h-acc-label { font-size: 0.78rem; color: var(--text-secondary); width: 130px; flex-shrink: 0; text-align: right; }
+    .h-acc-track { flex: 1; background: var(--border); border-radius: 6px; height: 26px; overflow: hidden; }
+    .h-acc-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; font-size: 0.75rem; font-weight: 700; color: #fff; transition: width 1.1s cubic-bezier(.34,1.56,.64,1); width: 0; }
+
+    /* ── SVG bar chart (replaces CSS bars) ──────────────────────── */
+    .chart-bars { overflow: visible; }
+
+    /* ── Rubric donut chart ──────────────────────────────────────── */
+    .rubric-donut-wrap { display: flex; flex-wrap: wrap; gap: 32px; align-items: center; justify-content: center; }
+    .rubric-legend { display: flex; flex-direction: column; gap: 5px; min-width: 180px; }
+    .rubric-legend-row { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; }
+    .rubric-legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+    .rubric-legend-label { flex: 1; color: var(--text-secondary); }
+    .rubric-legend-pct { font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--text); min-width: 32px; text-align: right; }
+
+    /* ── Mermaid decision tree ───────────────────────────────────── */
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; overflow-x: auto; }
+    .mermaid svg { max-width: 100%; height: auto !important; }
+    .mermaid .label { font-family: 'Inter', sans-serif !important; }
 
     /* ── Citations ──────────────────────────────────────────────── */
     .cite { font-size: 0.72rem; vertical-align: super; line-height: 0; }
@@ -467,10 +499,8 @@
 
     <div class="viz reveal reveal-d1">
       <div class="viz-title">Field-Level Accuracy Expectations (Before Tool Selection)</div>
-      <div class="chart-bars" id="fieldAccChart" style="height:200px">
-        <!-- Rendered by JS -->
-      </div>
-      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap" id="fieldAccLegend"></div>
+      <div id="fieldAccChart" class="h-acc-chart"><!-- Rendered by JS --></div>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center" id="fieldAccLegend"></div>
     </div>
 
     <div class="stat-row reveal reveal-d2">
@@ -1031,48 +1061,40 @@ endbfchar</div>
     <h2 class="section-title">Which parser for which form?</h2>
     <p class="section-intro">Answers to four questions narrow you to the right tool. Route different form subtypes to different parsers in a hybrid pipeline.</p>
 
-    <div class="decision-tree reveal">
-<span class="dt-node">START: Incoming complaint form PDF
-│
-├─ Is data residency / air-gap required?
-│   │
-│   </span><span class="dt-yes">YES</span><span class="dt-node"> ─── RULE OUT: LlamaParse, AWS Textract, any cloud API
-│   │         Must use local tools only (Docling, PaddleOCR, TrOCR, pypdf)
-│   │
-│   </span><span class="dt-no">NO</span><span class="dt-node"> ─── (cloud with signed DPA is acceptable) ──────────┐
-│                                                               │
-├─ Does the PDF have a native text layer?                      │
-│   │                                                          │
-│   </span><span class="dt-yes">YES</span><span class="dt-node"> ── Is it a digital AcroForm with fillable fields?     │
-│   │    │                                                     │
-│   │    </span><span class="dt-yes">YES</span><span class="dt-node"> ── </span><span class="dt-result">pypdf.get_fields() — fastest, 100% accurate</span><span class="dt-node">    │
-│   │    │                                                     │
-│   │    </span><span class="dt-no">NO</span><span class="dt-node"> ─── Complex layout or tables?                        │
-│   │         │                                                │
-│   │         </span><span class="dt-yes">YES</span><span class="dt-node"> ── </span><span class="dt-result">Docling — 97.9% table accuracy</span><span class="dt-node">           │
-│   │         </span><span class="dt-no">NO</span><span class="dt-node"> ──── </span><span class="dt-result">PyMuPDF — fastest for plain text</span><span class="dt-node">          │
-│                                                              │
-</span><span class="dt-no">NO</span><span class="dt-node"> ─── (scanned / image PDF)                              │
-│                                                              │
-├─ Scan quality check:                                        │
-│   │                                                          │
-│   </span><span class="dt-warn">&lt;200 DPI</span><span class="dt-node"> ─── REJECT or request rescan                       │
-│   </span><span class="dt-warn">200–300 DPI</span><span class="dt-node"> ── Apply FULL preprocessing (deskew+denoise+CLAHE)  │
-│   </span><span class="dt-yes">≥300 DPI</span><span class="dt-node"> ─── Apply standard preprocessing, proceed          │
-│                                                              │
-├─ Are handwritten fields present?                            │
-│   │                                                          │
-│   </span><span class="dt-yes">YES</span><span class="dt-node"> ── Volume &gt; 500K pages/month?                        │
-│   │    │                                                     │
-│   │    </span><span class="dt-yes">YES</span><span class="dt-node"> ── </span><span class="dt-result">Docling (layout) + TrOCR (HW fields) — self-hosted</span><span class="dt-node"> │
-│   │    </span><span class="dt-no">NO</span><span class="dt-node"> ─── Cloud OK? ─── </span><span class="dt-yes">YES</span><span class="dt-node"> ── </span><span class="dt-result">AWS Textract Forms API ($0.065/pg)</span><span class="dt-node"> │
-│   │                  └── </span><span class="dt-no">NO</span><span class="dt-node"> ─── </span><span class="dt-result">Docling + TrOCR local</span><span class="dt-node">            │
-│                                                              │
-</span><span class="dt-no">NO</span><span class="dt-node"> ─── (printed/typed, scanned)                           │
-│   Volume &gt; ~26K forms/month?  ───────────────────────────────┘
-│   │
-│   </span><span class="dt-yes">YES</span><span class="dt-node"> ── </span><span class="dt-result">Docling self-hosted — cost break-even at ~167K forms/mo</span><span class="dt-node">
-│   </span><span class="dt-no">NO</span><span class="dt-node"> ─── </span><span class="dt-result">Azure Document Intelligence Custom ($0.030/pg)</span></span>
+    <div class="mermaid-wrap reveal">
+      <div class="mermaid" id="decisionMermaid">
+flowchart TD
+    A([📄 Incoming complaint form PDF]) --> B{🔒 Air-gap or data residency required?}
+    B -->|YES| C["Rule out all cloud APIs\nUse local tools only:\nDocling · PaddleOCR · TrOCR · pypdf"]
+    B -->|NO| D
+    C --> D{📄 Does the PDF have a text layer?}
+    D -->|YES — Digital PDF| E{Is it an AcroForm\nwith fillable fields?}
+    E -->|YES| F["✅ pypdf.get_fields\nFastest · 100% accurate\non digital forms"]
+    E -->|NO| G{Complex tables\nor multi-column layout?}
+    G -->|YES| H["✅ Docling\n97.9% table accuracy"]
+    G -->|NO| I["✅ PyMuPDF\nFastest plain text"]
+    D -->|NO — Scanned PDF| J{🔍 Scan quality?}
+    J -->|Less than 200 DPI| K["❌ Reject\nor request rescan"]
+    J -->|200 – 300 DPI| L["Apply FULL preprocessing\ndeskew → denoise → CLAHE → Sauvola"]
+    J -->|300 DPI or better| M["Standard preprocessing\ndeskew only"]
+    L --> N{✍️ Handwritten fields present?}
+    M --> N
+    N -->|YES| O{Volume over\n500K pages/month?}
+    O -->|YES| P["✅ Docling + TrOCR\nSelf-hosted pipeline"]
+    O -->|NO| Q{Cloud OK?}
+    Q -->|YES| R["☁️ AWS Textract Forms API\n$0.065 per page"]
+    Q -->|NO| P
+    N -->|NO — Printed text only| S{Volume over\n26K forms/month?}
+    S -->|YES| P
+    S -->|NO| T["☁️ Azure Document Intelligence\n$0.030 per page"]
+    style F fill:#1a3a1a,stroke:#22c55e,color:#22c55e
+    style H fill:#1a2a3a,stroke:#3b82f6,color:#3b82f6
+    style I fill:#1a2a3a,stroke:#3b82f6,color:#3b82f6
+    style P fill:#1a2a3a,stroke:#3b82f6,color:#3b82f6
+    style K fill:#3a1a1a,stroke:#ef4444,color:#ef4444
+    style R fill:#2a1a3a,stroke:#a855f7,color:#a855f7
+    style T fill:#2a1a3a,stroke:#a855f7,color:#a855f7
+      </div>
     </div>
   </div>
 </section>
@@ -1095,7 +1117,7 @@ endbfchar</div>
         <div class="pipe-arrow">/</div>
         <div class="pipe-node">Scanned Path<sub>Preproc → Docling</sub></div>
         <div class="pipe-arrow">/</div>
-        <div class="pipe-node">HW Fields<sub>TrOCR</sub></div>
+        <div class="pipe-node">Handwritten Fields<sub>TrOCR</sub></div>
         <div class="pipe-arrow">→</div>
         <div class="pipe-node active">Validation<sub>Pydantic v2</sub></div>
         <div class="pipe-arrow">→</div>
@@ -1384,33 +1406,109 @@ const COST_DATA = [
   { name: 'AWS Textract (100K)', val: 19.5, cls: 'tesseract' },
 ];
 
-function renderBarChart(containerId, data, maxVal, unit = '%', scale = 1) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  container.innerHTML = '';
-  const actualMax = maxVal || Math.max(...data.map(d => d.val)) * 1.15;
+function renderBarChart(containerId, data, _ignored, unit = '%', _scale, opts = {}) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
 
-  data.forEach((d, i) => {
-    const col = document.createElement('div');
-    col.className = 'bar-col';
-    const pct = Math.min((d.val / actualMax) * 100, 100);
+  const COLORS = {
+    docling: '#3b82f6', pymupdf: '#a855f7', paddleocr: '#22c55e',
+    tesseract: '#f59e0b', trocr: '#06b6d4', claude: '#ef4444',
+  };
 
-    col.innerHTML = `
-      <div class="bar-val">${typeof d.val === 'number' && d.val < 10 ? d.val.toFixed(1) : Math.round(d.val)}${unit}</div>
-      <div class="bar-fill ${d.cls || ''}" style="height:0;margin-top:auto" data-target="${pct}"></div>
-      <div class="bar-name">${d.name || d.label}</div>
-    `;
-    container.appendChild(col);
+  // Sort ascending (smallest left → biggest right) for cost & speed
+  const sortAsc = containerId === 'costChart' || containerId === 'speedChart';
+  const sorted = sortAsc ? [...data].sort((a, b) => a.val - b.val) : data;
+
+  const maxV = Math.max(...sorted.map(d => d.val));
+  const minV = Math.min(...sorted.map(d => d.val));
+  const useLog = (maxV / (minV || 0.1)) > 20;
+
+  // SVG dimensions
+  const W = el.clientWidth || 460;
+  const H = 220, padL = 52, padB = 68, padT = 28, padR = 12;
+  const cW = W - padL - padR, cH = H - padT - padB;
+
+  function toY(v) {
+    if (useLog) {
+      const lo = Math.log10(Math.max(minV * 0.5, 0.05));
+      const hi = Math.log10(maxV * 1.3);
+      return padT + cH - ((Math.log10(v) - lo) / (hi - lo)) * cH;
+    }
+    return padT + cH - (v / (maxV * 1.15)) * cH;
+  }
+
+  // Y-axis ticks
+  let ticks = [];
+  if (useLog) {
+    const lo = Math.floor(Math.log10(Math.max(minV * 0.5, 0.05)));
+    const hi = Math.ceil(Math.log10(maxV * 1.3));
+    for (let e = lo; e <= hi; e++) {
+      for (const m of [1, 2, 5]) {
+        const v = m * Math.pow(10, e);
+        if (v >= minV * 0.5 && v <= maxV * 1.4) ticks.push(v);
+      }
+    }
+  } else {
+    const step = (maxV * 1.15) / 5;
+    for (let i = 0; i <= 5; i++) ticks.push(step * i);
+  }
+
+  const fmtVal = v => {
+    if (v >= 1000) return (v/1000).toFixed(0) + 'K';
+    if (v < 1) return v.toFixed(1);
+    if (v < 10) return v.toFixed(1);
+    return Math.round(v);
+  };
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:${H}px;overflow:visible">`;
+
+  // Grid lines & Y-axis labels
+  ticks.forEach(t => {
+    const y = toY(t);
+    if (y < padT - 4 || y > padT + cH + 4) return;
+    svg += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${padL + cW}" y2="${y.toFixed(1)}" stroke="#1c1c24" stroke-width="1"/>`;
+    svg += `<text x="${padL - 5}" y="${(y + 4).toFixed(1)}" text-anchor="end" font-size="9" fill="#64647a">${fmtVal(t)}${unit}</text>`;
+  });
+  // Axes
+  svg += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT + cH}" stroke="#2a2a36" stroke-width="1.5"/>`;
+  svg += `<line x1="${padL}" y1="${padT + cH}" x2="${padL + cW}" y2="${padT + cH}" stroke="#2a2a36" stroke-width="1.5"/>`;
+
+  // Bars
+  const n = sorted.length;
+  const slotW = cW / n;
+  const barW = Math.min(slotW * 0.62, 56);
+
+  sorted.forEach((d, i) => {
+    const bx = padL + i * slotW + (slotW - barW) / 2;
+    const yTop = toY(d.val);
+    const yBot = toY(useLog ? Math.max(minV * 0.5, 0.05) : 0);
+    const bH = Math.max(yBot - yTop, 2);
+    const col = COLORS[d.cls] || '#3b82f6';
+
+    svg += `<rect x="${bx.toFixed(1)}" y="${yTop.toFixed(1)}" width="${barW.toFixed(1)}" height="${bH.toFixed(1)}" rx="4" fill="${col}" opacity="0.88"/>`;
+    svg += `<text x="${(bx + barW/2).toFixed(1)}" y="${(yTop - 5).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="${col}">${fmtVal(d.val)}${unit}</text>`;
+
+    // X-label — split on space if long
+    const cx2 = bx + barW / 2;
+    const parts = (d.name || d.label).split(' ');
+    const lx = cx2.toFixed(1), ly = padT + cH + 14;
+    if (parts.length >= 2 && (d.name || d.label).length > 11) {
+      const mid = Math.ceil(parts.length / 2);
+      svg += `<text x="${lx}" y="${ly}" text-anchor="middle" font-size="9" fill="#b0b0b8">${parts.slice(0, mid).join(' ')}</text>`;
+      svg += `<text x="${lx}" y="${ly + 11}" text-anchor="middle" font-size="9" fill="#b0b0b8">${parts.slice(mid).join(' ')}</text>`;
+    } else {
+      svg += `<text x="${lx}" y="${ly}" text-anchor="middle" font-size="9" fill="#b0b0b8">${d.name || d.label}</text>`;
+    }
   });
 
-  // Animate bars after brief delay (allows DOM to settle)
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      container.querySelectorAll('.bar-fill').forEach(bar => {
-        bar.style.height = bar.dataset.target + '%';
-      });
-    }, 200);
-  });
+  if (useLog) {
+    svg += `<text x="${padL + cW / 2}" y="${H - 2}" text-anchor="middle" font-size="9" fill="#64647a" font-style="italic">log scale</text>`;
+  }
+
+  svg += '</svg>';
+  el.innerHTML = svg;
+  el.style.height = H + 'px';
+  el.style.overflow = 'visible';
 }
 
 function renderFieldAccChart() {
@@ -1418,18 +1516,22 @@ function renderFieldAccChart() {
   const legend = document.getElementById('fieldAccLegend');
   if (!container) return;
   container.innerHTML = '';
-  container.style.height = '200px';
+  container.style.height = 'auto';
+
+  // Scale: 65–100 so small differences are visible
+  const BASE = 65, RANGE = 35;
 
   FIELD_ACC_DATA.forEach(d => {
-    const col = document.createElement('div');
-    col.className = 'bar-col';
-    const pct = d.acc;
-    col.innerHTML = `
-      <div class="bar-val">${d.acc}%</div>
-      <div class="bar-fill" style="height:0;margin-top:auto;background:${d.color}" data-target="${pct}"></div>
-      <div class="bar-name">${d.label}</div>
-    `;
-    container.appendChild(col);
+    const color = d.acc >= 95 ? '#22c55e' : d.acc >= 80 ? '#f59e0b' : '#ef4444';
+    const pct = Math.max(((d.acc - BASE) / RANGE) * 100, 4);
+    const row = document.createElement('div');
+    row.className = 'h-acc-row';
+    row.innerHTML = `
+      <div class="h-acc-label">${d.label}</div>
+      <div class="h-acc-track">
+        <div class="h-acc-fill" style="width:0;background:${color}" data-target="${pct}">${d.acc}%</div>
+      </div>`;
+    container.appendChild(row);
   });
 
   if (legend) {
@@ -1437,56 +1539,84 @@ function renderFieldAccChart() {
       <span class="tag green">≥95%: Adequate</span>
       <span class="tag amber">80–94%: Monitor</span>
       <span class="tag red">&lt;80%: HITL required</span>
-    `;
+      <span style="font-size:0.7rem;color:var(--muted)">(bars scaled 65–100% to show differences)</span>`;
   }
 
   setTimeout(() => {
-    container.querySelectorAll('.bar-fill').forEach(bar => {
-      bar.style.height = bar.dataset.target + '%';
+    container.querySelectorAll('.h-acc-fill').forEach(f => {
+      f.style.width = f.dataset.target + '%';
     });
-  }, 300);
+  }, 350);
 }
 
 function renderRubricRings() {
   const container = document.getElementById('rubricRings');
   if (!container) return;
+
+  // Sorted by weight descending
   const criteria = [
-    { label: 'Text', weight: 0.12 },
-    { label: 'Handwriting', weight: 0.22 },
-    { label: 'Tables', weight: 0.08 },
-    { label: 'KVP', weight: 0.18 },
-    { label: 'Figures', weight: 0.05 },
-    { label: 'Degraded', weight: 0.10 },
-    { label: 'Speed', weight: 0.05 },
-    { label: 'Compliance', weight: 0.10 },
-    { label: 'License', weight: 0.05 },
-    { label: 'Maint.', weight: 0.05 },
+    { label: 'Handwriting', weight: 0.22, color: '#f59e0b' },
+    { label: 'KVP / Forms', weight: 0.18, color: '#3b82f6' },
+    { label: 'Text Extraction', weight: 0.12, color: '#22c55e' },
+    { label: 'Degraded Scans', weight: 0.10, color: '#6366f1' },
+    { label: 'Compliance', weight: 0.10, color: '#ef4444' },
+    { label: 'Table Structure', weight: 0.08, color: '#8b5cf6' },
+    { label: 'License', weight: 0.05, color: '#64748b' },
+    { label: 'Speed', weight: 0.05, color: '#06b6d4' },
+    { label: 'Maintenance', weight: 0.05, color: '#84cc16' },
+    { label: 'Figures', weight: 0.05, color: '#f97316' },
   ];
 
-  criteria.forEach(c => {
-    const pct = Math.round(c.weight * 100);
-    const radius = 28;
-    const circ = 2 * Math.PI * radius;
-    const dash = (pct / 100) * circ;
-    const color = pct >= 20 ? '#3b82f6' : pct >= 10 ? '#a855f7' : '#64647a';
+  const R = 88, r = 52, cx = 108, cy = 108, GAP = 0.025;
+  let startAngle = -Math.PI / 2;
+  let paths = '', legend = '';
 
-    const ring = document.createElement('div');
-    ring.className = 'score-ring';
-    ring.innerHTML = `
-      <div class="ring-svg">
-        <svg width="72" height="72" viewBox="0 0 72 72">
-          <circle cx="36" cy="36" r="${radius}" fill="none" stroke="var(--border)" stroke-width="6"/>
-          <circle cx="36" cy="36" r="${radius}" fill="none" stroke="${color}" stroke-width="6"
-            stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"
-            stroke-dashoffset="${circ * 0.25}" stroke-linecap="round"
-            transform="rotate(-90 36 36)"/>
-          <text x="36" y="40" text-anchor="middle" font-size="13" font-weight="700"
-            fill="var(--text)" font-family="JetBrains Mono, monospace">${pct}%</text>
-        </svg>
-      </div>
-      <div class="ring-label">${c.label}</div>
-    `;
-    container.appendChild(ring);
+  criteria.forEach(c => {
+    const sweep = c.weight * 2 * Math.PI;
+    const s = startAngle + GAP / 2;
+    const e = startAngle + sweep - GAP / 2;
+    const large = sweep > Math.PI ? 1 : 0;
+    const ox1 = cx + R * Math.cos(s), oy1 = cy + R * Math.sin(s);
+    const ox2 = cx + R * Math.cos(e), oy2 = cy + R * Math.sin(e);
+    const ix1 = cx + r * Math.cos(s), iy1 = cy + r * Math.sin(s);
+    const ix2 = cx + r * Math.cos(e), iy2 = cy + r * Math.sin(e);
+    const d = `M${ox1.toFixed(2)} ${oy1.toFixed(2)} A${R} ${R} 0 ${large} 1 ${ox2.toFixed(2)} ${oy2.toFixed(2)} L${ix2.toFixed(2)} ${iy2.toFixed(2)} A${r} ${r} 0 ${large} 0 ${ix1.toFixed(2)} ${iy1.toFixed(2)} Z`;
+    paths += `<path d="${d}" fill="${c.color}" opacity="0.85"><title>${c.label}: ${Math.round(c.weight*100)}%</title></path>`;
+    startAngle += sweep;
+    legend += `<div class="rubric-legend-row"><div class="rubric-legend-dot" style="background:${c.color}"></div><span class="rubric-legend-label">${c.label}</span><span class="rubric-legend-pct">${Math.round(c.weight*100)}%</span></div>`;
+  });
+
+  container.innerHTML = `<div class="rubric-donut-wrap">
+    <div class="rubric-donut-chart">
+      <svg viewBox="0 0 216 216" style="width:200px;height:200px">
+        ${paths}
+        <text x="108" y="103" text-anchor="middle" font-size="13" font-weight="700" fill="#eeeef0">Scoring</text>
+        <text x="108" y="120" text-anchor="middle" font-size="11" fill="#64647a">weights</text>
+      </svg>
+    </div>
+    <div class="rubric-legend">${legend}</div>
+  </div>`;
+}
+
+// Initialise Mermaid (decision framework diagram)
+if (typeof mermaid !== 'undefined') {
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#1d4ed8',
+      primaryTextColor: '#eeeef0',
+      primaryBorderColor: '#3b82f6',
+      lineColor: '#64647a',
+      secondaryColor: '#0e0e12',
+      tertiaryColor: '#141418',
+      background: '#0e0e12',
+      mainBkg: '#141418',
+      clusterBkg: '#0a0a10',
+      edgeLabelBackground: '#1c1c24',
+      fontSize: '13px',
+    },
+    flowchart: { curve: 'basis', padding: 16 },
   });
 }
 
@@ -1498,6 +1628,15 @@ window.addEventListener('load', () => {
   renderBarChart('hwChart', HW_DATA, 100, '%');
   renderBarChart('costChart', COST_DATA, null, 'K$');
   renderRubricRings();
+  // Re-render charts after fonts load (ensures correct clientWidth)
+  if (document.fonts) {
+    document.fonts.ready.then(() => {
+      renderBarChart('tableAccChart', TABLE_ACC_DATA, 100, '%');
+      renderBarChart('speedChart', SPEED_DATA, null, ' p/s');
+      renderBarChart('hwChart', HW_DATA, 100, '%');
+      renderBarChart('costChart', COST_DATA, null, 'K$');
+    });
+  }
 });
 </script>
 </body>
