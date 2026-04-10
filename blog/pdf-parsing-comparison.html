@@ -372,6 +372,24 @@
     .compare-col ul li:last-child { border-bottom: none; }
     .compare-col ul li::before { content: '▸ '; color: var(--accent); }
 
+    /* ── Citations ──────────────────────────────────────────────── */
+    .cite { font-size: 0.72rem; vertical-align: super; line-height: 0; }
+    .cite a { color: var(--accent); text-decoration: none; }
+    .cite a:hover { text-decoration: underline; }
+    #references { padding: 60px 0 0; }
+    #references h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; }
+    .ref-list { list-style: none; padding: 0; margin: 0; }
+    .ref-list li {
+      display: flex; gap: 12px; padding: 10px 0;
+      border-bottom: 1px solid var(--border); font-size: 0.82rem; color: var(--text-secondary);
+    }
+    .ref-list li:last-child { border-bottom: none; }
+    .ref-num { flex-shrink: 0; color: var(--accent); font-weight: 600; min-width: 28px; }
+    .ref-list a { color: var(--accent); }
+    .ref-list a:hover { text-decoration: underline; }
+    .ref-type { font-size: 0.7rem; border: 1px solid var(--border); border-radius: 4px;
+      padding: 1px 5px; margin-left: 6px; color: var(--muted); white-space: nowrap; }
+
     /* ── Footer ─────────────────────────────────────────────────── */
     .footer {
       border-top: 1px solid var(--border); padding: 40px 0;
@@ -444,7 +462,7 @@
     </div>
 
     <div class="insight warn">
-      <strong>The benchmark trap:</strong> OmniDocBench (CVPR 2025) tested 9 document types and found over 55 percentage points of accuracy variance across document categories — for the same parser. Domain composition matters more than which tool you pick. Measure on your actual forms.
+      <strong>The benchmark trap:</strong> OmniDocBench (CVPR 2025) tested 9 document types and found over 55 percentage points of accuracy variance across document categories — for the same parser.<span class="cite"><a href="#ref-2">[2]</a></span> Domain composition matters more than which tool you pick. Measure on your actual forms.
     </div>
 
     <div class="viz reveal reveal-d1">
@@ -475,7 +493,7 @@
     </div>
 
     <div class="insight">
-      <strong>No benchmark covers real complaint forms.</strong> FUNSD (the closest proxy) contains 199 administrative forms — mostly machine-typed, not handwritten. Build a proprietary annotated corpus from 200+ real forms before making a production tool selection.
+      <strong>No benchmark covers real complaint forms.</strong> FUNSD (the closest proxy) contains 199 administrative forms — mostly machine-typed, not handwritten.<span class="cite"><a href="#ref-1">[1]</a></span> Build a proprietary annotated corpus from 200+ real forms before making a production tool selection.
     </div>
   </div>
 </section>
@@ -570,12 +588,12 @@
         </tbody>
       </table>
     </div>
-    <p style="font-size:0.75rem;color:var(--muted);margin-top:8px">* Procycons 2025 benchmark on sustainability reports. Not measured on complaint forms specifically. † AGPL-3.0 is free for internal/on-prem use; commercial redistribution requires a paid Artifex license. ‡ CER on IAM clean handwriting dataset — real-world complaint form handwriting will be higher.</p>
+    <p style="font-size:0.75rem;color:var(--muted);margin-top:8px">* Procycons 2025 benchmark on sustainability reports.<span class="cite"><a href="#ref-10">[10]</a></span> Not measured on complaint forms specifically. † AGPL-3.0 is free for internal/on-prem use; commercial redistribution requires a paid Artifex license. ‡ CER on IAM clean handwriting dataset<span class="cite"><a href="#ref-7">[7]</a></span> — real-world complaint form handwriting will be higher.</p>
 
     <!-- Top 3 tool cards -->
     <div class="tool-grid reveal reveal-d1">
       <div class="tool-card highlight">
-        <div class="tool-name">Docling</div>
+        <div class="tool-name">Docling<span class="cite"><a href="#ref-4">[4]</a></span></div>
         <div class="tool-license"><span class="tag blue">MIT</span> &nbsp; IBM Research · 37k ★</div>
         <div class="tool-desc">Best open-source ML layout parser. TableFormer model achieves near-commercial table accuracy. Fully local, air-gap compatible. Native PII integration via GLiNER.</div>
         <div class="tool-caps">
@@ -598,7 +616,7 @@
       <div class="tool-card">
         <div class="tool-name">PaddleOCR</div>
         <div class="tool-license"><span class="tag green">Apache-2.0</span> &nbsp; Baidu · 70k ★</div>
-        <div class="tool-desc">Most comprehensive open-source OCR suite. PP-OCRv4 + PP-StructureV2 for layout and tables. 80+ language support. Best choice for multilingual complaint forms from diverse customer bases.</div>
+        <div class="tool-desc">Most comprehensive open-source OCR suite. PP-OCRv4<span class="cite"><a href="#ref-6">[6]</a></span> + PP-StructureV2 for layout and tables. 80+ language support. Best choice for multilingual complaint forms from diverse customer bases.</div>
         <div class="tool-caps">
           <span class="tag green">Scanned</span>
           <span class="tag green">Tables (ML)</span>
@@ -666,7 +684,7 @@ endbfchar</div>
 
     <!-- ── 3.2 OCR ── -->
     <div class="viz reveal">
-      <div class="viz-title">Category 2 — Traditional OCR (Tesseract · PaddleOCR PP-OCRv4)</div>
+      <div class="viz-title">Category 2 — Traditional OCR (Tesseract · PaddleOCR PP-OCRv4<span class="cite"><a href="#ref-6">[6]</a></span>)</div>
       <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">Converts a raster image into text through a multi-stage vision pipeline. Each stage is a prerequisite for the next.</p>
 
       <div class="pipeline">
@@ -689,7 +707,7 @@ endbfchar</div>
         <div>
           <p style="font-size:0.85rem;font-weight:600;margin-bottom:12px;color:var(--text)">How Tesseract segments words</p>
           <ol style="font-size:0.85rem;color:var(--text-secondary);line-height:1.8;padding-left:20px">
-            <li><strong style="color:var(--text)">Binarize</strong> — Otsu global threshold converts grey pixels to pure black/white. Sauvola is better for mixed handwrite/print (adapts per tile).</li>
+            <li><strong style="color:var(--text)">Binarize</strong> — Otsu global threshold converts grey pixels to pure black/white. Sauvola<span class="cite"><a href="#ref-8">[8]</a></span> is better for mixed handwrite/print (adapts per tile).</li>
             <li><strong style="color:var(--text)">Find baselines</strong> — horizontal projection profiles detect row gaps. Each ink-dense row is a text line.</li>
             <li><strong style="color:var(--text)">Find words</strong> — vertical projection profiles within each line detect white gaps. Each connected blob is a word candidate.</li>
             <li><strong style="color:var(--text)">Classify characters</strong> — LSTM (Tesseract 4+) reads each word image left-to-right and predicts character sequences with a CTC loss decoder.</li>
@@ -749,7 +767,7 @@ endbfchar</div>
 
     <!-- ── 3.4 Handwriting ── -->
     <div class="viz reveal">
-      <div class="viz-title">Category 4 — Handwriting recognition (TrOCR)</div>
+      <div class="viz-title">Category 4 — Handwriting recognition (TrOCR<span class="cite"><a href="#ref-5">[5]</a></span>)</div>
       <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:20px;">Microsoft TrOCR is a Vision-Encoder–Language-Decoder transformer trained entirely on handwritten text images. It never uses sliding windows or character classifiers.</p>
 
       <div class="pipeline">
@@ -766,7 +784,7 @@ endbfchar</div>
 
       <div class="viz-row cols-2" style="margin-top:24px;gap:32px">
         <div class="insight success" style="margin:0">
-          <strong>What TrOCR gets right:</strong> because it reads a field as a whole image (not character by character), connected script and ligatures that break character classifiers are handled naturally. CER ~2.9% on clean IAM handwriting.
+          <strong>What TrOCR gets right:</strong> because it reads a field as a whole image (not character by character), connected script and ligatures that break character classifiers are handled naturally. CER ~2.9% on clean IAM handwriting.<span class="cite"><a href="#ref-7">[7]</a></span>
         </div>
         <div class="insight warn" style="margin:0">
           <strong>What TrOCR gets wrong:</strong> real complaint forms have noisy, degraded, variable-size handwriting. CER degrades to 30–60% on real-world inputs. The model was trained on curated single-writer samples. Use it per-field, not whole-page.
@@ -813,7 +831,7 @@ endbfchar</div>
 
     <div class="viz reveal">
       <div class="viz-title">Measured Results — Scanned Forms FUNSD (N=10) ✓</div>
-      <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:16px">Real scanned business forms from FUNSD (EPFL 2019). Human-annotated ground truth. Text parsers return empty string (no text layer in raster-image PDFs). Tesseract runs OCR on the rendered image.</p>
+      <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:16px">Real scanned business forms from FUNSD (EPFL 2019).<span class="cite"><a href="#ref-1">[1]</a></span> Human-annotated ground truth. Text parsers return empty string (no text layer in raster-image PDFs). Tesseract runs OCR on the rendered image.</p>
       <div class="table-wrap">
         <table>
           <thead><tr>
@@ -832,7 +850,7 @@ endbfchar</div>
     </div>
 
     <div class="insight warn">
-      <strong>Published benchmark numbers below (marked *) are from external research, not this machine.</strong> Sources: Applied AI 2025 (800 docs, 17 parsers), Procycons 2025 (Docling table accuracy), Koncile 2025, NVIDIA 2025. Your results on your corpus will differ.
+      <strong>Published benchmark numbers below (marked *) are from external research, not this machine.</strong> Sources: Applied AI 2025<span class="cite"><a href="#ref-9">[9]</a></span> (800+ docs, 17 parsers), Procycons 2025<span class="cite"><a href="#ref-10">[10]</a></span> (Docling table accuracy on sustainability reports), Koncile 2025<span class="cite"><a href="#ref-11">[11]</a></span>, NVIDIA 2025<span class="cite"><a href="#ref-12">[12]</a></span>. Your results on your corpus will differ.
     </div>
 
     <!-- Chart: Table Accuracy -->
@@ -854,7 +872,7 @@ endbfchar</div>
     <div class="viz reveal reveal-d1">
       <div class="viz-title">Handwriting Recognition — On Documents with Handwritten Notes</div>
       <div class="chart-bars" id="hwChart"></div>
-      <p style="font-size:0.75rem;color:var(--muted);margin-top:12px">Source: Braincuber 2025 independent 100-document benchmark. All numbers represent accuracy on documents containing handwritten annotations — not pure handwriting datasets. TrOCR CER from IAM Handwriting Database (clean).</p>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:12px">Source: Braincuber 2025 independent benchmark.<span class="cite"><a href="#ref-13">[13]</a></span> All numbers represent accuracy on documents containing handwritten annotations — not pure handwriting datasets. TrOCR CER from IAM Handwriting Database<span class="cite"><a href="#ref-7">[7]</a></span> (clean).</p>
     </div>
 
     <!-- Preprocessing impact -->
@@ -871,7 +889,7 @@ endbfchar</div>
         <div class="pipe-arrow">→</div>
         <div class="pipe-node" style="border-color:var(--green);background:rgba(34,197,94,0.08);color:var(--green)">~92% Accuracy<sub>+22% median gain</sub></div>
       </div>
-      <p style="font-size:0.8rem;color:var(--muted);margin-top:8px">Source: Compiled from multiple OCR preprocessing studies (2023–2025). The +22% is a median figure across degraded document types — your mileage will vary by scan quality and OCR engine.</p>
+      <p style="font-size:0.8rem;color:var(--muted);margin-top:8px">Source: Compiled from industry benchmarks (2023–2025).<span class="cite"><a href="#ref-9">[9]</a></span><span class="cite"><a href="#ref-12">[12]</a></span> The +22% is a median figure across degraded document types — your mileage will vary by scan quality and OCR engine.</p>
     </div>
 
     <!-- Measured finding: preprocessing hurts clean scans -->
@@ -1144,6 +1162,145 @@ endbfchar</div>
     <div class="insight warn">
       <strong>Before you start:</strong> Annotate 200 real forms (ground truth JSON), run the ablation in <code>sandbox/evaluate.py</code>, measure your actual CER/WER/FER, and calibrate your confidence thresholds empirically. All the numbers on this page are starting points derived from published research — not measurements on your complaint forms.
     </div>
+  </div>
+</section>
+
+<!-- ── References ──────────────────────────────────────────────────── -->
+<section id="references">
+  <div class="container">
+    <h2>References</h2>
+    <ol class="ref-list">
+      <li id="ref-1">
+        <span class="ref-num">[1]</span>
+        <span>
+          Jaume, G., Ekenel, H. K., &amp; Thiran, J.-P. (2019).
+          <strong>FUNSD: A Dataset for Form Understanding in Noisy Scanned Documents.</strong>
+          ICDAR-OST 2019.
+          <a href="https://arxiv.org/abs/1905.13538" target="_blank" rel="noopener">arXiv:1905.13538</a> ·
+          <a href="https://guillaumejaume.github.io/FUNSD/" target="_blank" rel="noopener">Dataset page</a>
+          <span class="ref-type">Dataset · Paper</span>
+        </span>
+      </li>
+      <li id="ref-2">
+        <span class="ref-num">[2]</span>
+        <span>
+          Ouyang, L., et al. (2024/2025).
+          <strong>OmniDocBench: Benchmarking Diverse PDF Document Parsing with Comprehensive Annotations.</strong>
+          CVPR 2025.
+          <a href="https://arxiv.org/abs/2412.07626" target="_blank" rel="noopener">arXiv:2412.07626</a> ·
+          <a href="https://github.com/opendatalab/OmniDocBench" target="_blank" rel="noopener">GitHub</a>
+          <span class="ref-type">Conference Paper</span>
+        </span>
+      </li>
+      <li id="ref-3">
+        <span class="ref-num">[3]</span>
+        <span>
+          Pfitzmann, B., Auer, C., Dolfi, M., Nassar, A. S., &amp; Staar, P. (2022).
+          <strong>DocLayNet: A Large Human-Annotated Dataset for Document-Layout Segmentation.</strong>
+          KDD 2022. IBM Research.
+          <a href="https://arxiv.org/abs/2206.01062" target="_blank" rel="noopener">arXiv:2206.01062</a>
+          <span class="ref-type">Dataset · Conference Paper</span>
+        </span>
+      </li>
+      <li id="ref-4">
+        <span class="ref-num">[4]</span>
+        <span>
+          Auer, C., et al. (2024).
+          <strong>Docling Technical Report.</strong>
+          IBM Research Zurich.
+          <a href="https://arxiv.org/abs/2408.09869" target="_blank" rel="noopener">arXiv:2408.09869</a> ·
+          <a href="https://github.com/docling-project/docling" target="_blank" rel="noopener">GitHub</a>
+          <span class="ref-type">Technical Report</span>
+        </span>
+      </li>
+      <li id="ref-5">
+        <span class="ref-num">[5]</span>
+        <span>
+          Li, M., Lv, T., Chen, J., Cui, L., Lu, Y., Florencio, D., Zhang, C., Li, Z., &amp; Wei, F. (2021).
+          <strong>TrOCR: Transformer-based Optical Character Recognition with Pre-trained Models.</strong>
+          Microsoft Research.
+          <a href="https://arxiv.org/abs/2109.10282" target="_blank" rel="noopener">arXiv:2109.10282</a>
+          <span class="ref-type">Paper</span>
+        </span>
+      </li>
+      <li id="ref-6">
+        <span class="ref-num">[6]</span>
+        <span>
+          Du, Y., et al. (2020).
+          <strong>PP-OCR: A Practical Ultra Lightweight OCR System.</strong>
+          Baidu Inc.
+          <a href="https://arxiv.org/abs/2009.09941" target="_blank" rel="noopener">arXiv:2009.09941</a>
+          (PP-OCRv3: <a href="https://arxiv.org/abs/2206.03001" target="_blank" rel="noopener">arXiv:2206.03001</a>)
+          <span class="ref-type">Paper</span>
+        </span>
+      </li>
+      <li id="ref-7">
+        <span class="ref-num">[7]</span>
+        <span>
+          Marti, U.-V., &amp; Bunke, H. (2002).
+          <strong>The IAM-database: an English sentence database for offline handwriting recognition.</strong>
+          International Journal on Document Analysis and Recognition, 5(1), 39–46.
+          <a href="https://fki.tic.heia-fr.ch/databases/iam-handwriting-database" target="_blank" rel="noopener">Dataset page</a>
+          <span class="ref-type">Dataset</span>
+        </span>
+      </li>
+      <li id="ref-8">
+        <span class="ref-num">[8]</span>
+        <span>
+          Sauvola, J., &amp; Pietikäinen, M. (2000).
+          <strong>Adaptive document image binarization.</strong>
+          Pattern Recognition, 33(2), 225–236.
+          <a href="https://doi.org/10.1016/S0031-3203(99)00055-2" target="_blank" rel="noopener">doi:10.1016/S0031-3203(99)00055-2</a>
+          <span class="ref-type">Journal Paper</span>
+        </span>
+      </li>
+      <li id="ref-9">
+        <span class="ref-num">[9]</span>
+        <span>
+          Applied AI. (2025, December).
+          <strong>The State of PDF Parsing: What 800+ Documents and 7 Frontier LLMs Taught Us About Parser Selection.</strong>
+          <a href="https://www.applied-ai.com/briefings/pdf-parsing-benchmark/" target="_blank" rel="noopener">applied-ai.com/briefings/pdf-parsing-benchmark/</a> ·
+          <a href="https://github.com/applied-artificial-intelligence/pdf-parser-benchmark" target="_blank" rel="noopener">GitHub</a>
+          <span class="ref-type">Industry Benchmark</span>
+        </span>
+      </li>
+      <li id="ref-10">
+        <span class="ref-num">[10]</span>
+        <span>
+          Procycons. (2025).
+          <strong>PDF Data Extraction Benchmark 2025: Comparing Docling, Unstructured, and LlamaParse for Document Processing Pipelines.</strong>
+          <a href="https://procycons.com/en/blogs/pdf-data-extraction-benchmark/" target="_blank" rel="noopener">procycons.com/en/blogs/pdf-data-extraction-benchmark/</a>
+          <span class="ref-type">Industry Report</span>
+        </span>
+      </li>
+      <li id="ref-11">
+        <span class="ref-num">[11]</span>
+        <span>
+          Koncile. (2025).
+          <strong>Document Parsing in 2025: Tools, Accuracy, and Comparisons.</strong>
+          <a href="https://www.koncile.ai/en/resources" target="_blank" rel="noopener">koncile.ai/en/resources</a>
+          <span class="ref-type">Industry Report</span>
+        </span>
+      </li>
+      <li id="ref-12">
+        <span class="ref-num">[12]</span>
+        <span>
+          NVIDIA Developer Blog. (2025, August).
+          <strong>Approaches to PDF Data Extraction for Information Retrieval.</strong>
+          <a href="https://developer.nvidia.com/blog/approaches-to-pdf-data-extraction-for-information-retrieval/" target="_blank" rel="noopener">developer.nvidia.com/blog/approaches-to-pdf-data-extraction</a>
+          <span class="ref-type">Technical Blog</span>
+        </span>
+      </li>
+      <li id="ref-13">
+        <span class="ref-num">[13]</span>
+        <span>
+          Braincuber Technologies. (2025).
+          <strong>AWS Textract vs Google Document AI: OCR Comparison.</strong>
+          <a href="https://www.braincuber.com/blog/aws-textract-vs-google-document-ai-ocr-comparison" target="_blank" rel="noopener">braincuber.com/blog/aws-textract-vs-google-document-ai-ocr-comparison</a>
+          <span class="ref-type">Industry Comparison</span>
+        </span>
+      </li>
+    </ol>
   </div>
 </section>
 
